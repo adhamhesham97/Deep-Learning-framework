@@ -6,9 +6,11 @@ Created on Tue Jan  5 23:47:45 2021
 """
 
 import numpy as np
+import matplotlib.pyplot as plt
 from layer import layer
 from optimization import optimization
 from visualization import visualization
+
 
 class Model:
     
@@ -32,6 +34,7 @@ class Model:
     def fit(self, X, label, batch_size,num_epochs,optimizer,loss_fn):
         loss_history = []
         itr=0
+        plt.ion()
         for epoch in range (num_epochs):
             A=X
             for layer in self.layers: 
@@ -41,10 +44,11 @@ class Model:
             for layer in self.layers[::-1]:
                 grad = layer.backward(grad) 
             loss_history+=[loss]
-            visualization(loss)
+            visualization(loss_history)
             print("Loss at epoch = {} and iteration = {}: {}".format(epoch,itr,loss_history[-1]))
             itr+=1
             optimizer.step(self.layers)
+        plt.show(block=True)
         return loss_history 
         
     def predict(self,X):
