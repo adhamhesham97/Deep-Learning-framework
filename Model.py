@@ -8,8 +8,8 @@ Created on Tue Jan  5 23:47:45 2021
 import numpy as np
 import matplotlib.pyplot as plt
 from layer import layer
-from optimization import optimization
-from visualization import visualization
+from Optimization import optimization
+from Visualization import visualization
 from Loss_Functions import Loss_Functions
 
 class Model:
