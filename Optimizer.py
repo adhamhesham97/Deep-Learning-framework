@@ -1,3 +1,4 @@
+import layer as layers
 class Optimization:
     
     def __init__(self,learningRate=0.1):
@@ -12,8 +13,8 @@ class Optimization:
             dw,db=layer.getGrads()
             
             #updating the layer parameters 
-            w=w-lr*dw
-            b=b-lr*db
+            w=w-self.lr*dw
+            b=b-self.lr*db
             
             #storing the new parameters in layer
             layer.setParams(w,b)
