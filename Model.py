@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from layer import layer
 from optimization import optimization
 from visualization import visualization
-
+from Loss_Functions import Loss_Functions
 
 class Model:
     
@@ -39,8 +39,8 @@ class Model:
             A=X
             for layer in self.layers: 
                 A=layer.forward(A)
-            loss = loss.forward(A,label)
-            grad = loss.backward()
+            loss = Loss_Functions.forward(A,label)
+            grad = Loss_Functions.backward()
             for layer in self.layers[::-1]:
                 grad = layer.backward(grad) 
             loss_history+=[loss]
