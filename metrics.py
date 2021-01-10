@@ -16,18 +16,22 @@ def accuracy (predicted_class,actual_class):
     return acc
 
 
-#for testing
-
-#predicted_output=[1,2,3,4,5]
-#desired_output=[5,4,3,2,1]
-#absolute=absolute_fun(predicted_output,desired_output)
-#print(absolute)
+def F1_score(labels,predicted):
 
 
+    labels=set(labels)
+    predicted=set(predicted)
 
-#predicted_class=[1,2,3,4,5]
-#desired_class=[1,2,0,8,5]
-#acc=accuracy(predicted_class,desired_class)
-#print(acc)
+    tp=len(labels.intersection(predicted))
+    fp=len(predicted.difference(labels))
+    fn=len(labels.difference(predicted))
 
+    if tp>0:
+        precision=float(tp)/(tp+fp)
+        recall=float(tp)/(tp+fn)
+
+
+        return 2*((precision*recall)/(precision+recall))
+    else:
+        return 0
 
