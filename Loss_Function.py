@@ -5,6 +5,12 @@ class loss_Function():
         #self.pred
         #self.labels
         
+    def log(self, X): #replace log(0)=-9999999 instead of -inf
+        with np.errstate(divide='ignore'):
+            res = np.log(X)
+        res[np.isneginf(res)]=-9999999
+        return res
+    
     def forward(self,pred,labels):
         self.m=labels.shape[1]
         self.pred=pred
@@ -17,7 +23,7 @@ class loss_Function():
             return np.sum(np.power(pred-labels,2))/(2*self.m)
         
         elif self.loss_type=="CROSSENTROPY":
-            return (-1/self.m)*np.sum(np.multiply(labels,np.log(pred))+np.multiply(1-labels,np.log(1-pred)))
+            return (-1/self.m)*np.sum(np.multiply(labels, self.log(pred))+np.multiply(1-labels, self.log(1-pred)))
 
     def backward(self):
         if self.loss_type=="LOG":

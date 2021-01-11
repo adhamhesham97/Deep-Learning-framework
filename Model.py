@@ -51,8 +51,8 @@ class model:
         
     def predict(self,X):
         for Layer in self.layers: 
-            Prediction = Layer.forward(X)
-        return Prediction 
+            X = Layer.forward(X)
+        return X 
     
 '''  
 m = model()
