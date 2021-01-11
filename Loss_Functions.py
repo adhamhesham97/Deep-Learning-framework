@@ -21,13 +21,13 @@ class Loss_Functions():
 
     def backward(self):
         if self.loss_type=="LOG":
-            return (1/self.m)*(((-1/self.pred)*((1+self.labels)/2)) + ((1/(1-self.pred))*((1-self.labels)/2)))
+            return (((-1/self.pred)*((1+self.labels)/2)) + ((1/(1-self.pred))*((1-self.labels)/2)))
         
         elif self.loss_type=="MEAN":
-            return (1/self.m)*(self.pred-self.labels)
+            return (self.pred-self.labels)
         
         elif self.loss_type=="CROSSENTROPY":
-            return (1/self.m)*((-self.labels/self.pred)+(1-self.labels/1-self.pred))
+            return ((-self.labels/self.pred)+(1-self.labels/1-self.pred))
         
         
         
