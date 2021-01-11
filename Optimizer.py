@@ -1,5 +1,4 @@
-import layer as layers
-class Optimization:
+class optimizer:
     
     def __init__(self,learningRate=0.1):
         self.lr=learningRate
