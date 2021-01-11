@@ -1,3 +1,12 @@
+###################################
+#metrics module
+####################################
+##by Kirollos Samir
+####################################
+
+
+
+
 def absolute_fun (predicted_output,desired_output):
     absolute=0
     for (x , y) in zip(predicted_output , desired_output) :
