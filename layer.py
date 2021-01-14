@@ -9,14 +9,15 @@ class layer():
         self.b = np.zeros((out_nodes, 1))
         self.db = np.zeros((out_nodes, 1))
         self.act_func = activation(activation_type)
+        self.weights_sum=0
 
     def forward(self, X):
         # X dimensions are (number of input nodes) x (number of examples)
         Z = self.w @ X + self.b  # Z = w * X + b
-        weights_sum=np.sum(np.square(self.w))
+        self.weights_sum=np.sum(np.square(self.w))
         output = self.act_func.forward(Z)  # A = activation(Z)
         self.X = X  # cache input to use it in back prop
-        return output, weights_sum
+        return output, self.weights_sum
 
     def backward(self, dA, Lambda):
         # dA dimensions are (number of output nodes) x (number of examples)
