@@ -13,9 +13,10 @@ class layer():
     def forward(self, X):
         # X dimensions are (number of input nodes) x (number of examples)
         Z = self.w @ X + self.b  # Z = w * X + b
+        weights_sum=np.sum(np.square(self.w))
         output = self.act_func.forward(Z)  # A = activation(Z)
         self.X = X  # cache input to use it in back prop
-        return output
+        return output, weights_sum
 
     def backward(self, dA, Lambda):
         # dA dimensions are (number of output nodes) x (number of examples)
