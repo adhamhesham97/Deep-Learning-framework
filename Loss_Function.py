@@ -2,6 +2,7 @@ import numpy as np
 class loss_Function():
     def __init__(self,loss_type):
         self.loss_type=loss_type
+        self.Lambda=0
         #self.pred
         #self.labels
         
