@@ -11,7 +11,9 @@ class loss_Function():
         res[np.isneginf(res)]=-9999999
         return res
     
-    def getLambda(self,Lambda):
+    def getLambda(self):
+        return self.Lambda
+    def setLambda(self,Lambda):
         self.Lambda= Lambda
 
     
