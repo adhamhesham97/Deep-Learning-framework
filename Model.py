@@ -53,7 +53,7 @@ class model:
             for X, label in mini_batches:
                 A=X
                 for Layer in self.layers: 
-                    A=Layer.forward(A)
+                    A,weights_sum = Layer.forward(A)
                 batch_loss = loss_fn.forward(A,label,weights_sum)
                 epoch_loss += batch_loss
                 grad = loss_fn.backward()
