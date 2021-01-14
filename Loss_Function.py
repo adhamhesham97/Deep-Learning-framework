@@ -22,7 +22,7 @@ class loss_Function():
         self.pred=pred
         self.labels=labels
         self.weights_sum=weights_sum
-        self.regularization_cost=(self.Lambda)/(2*self.m)*(self.weights_sum)
+        self.regularization_cost=((self.Lambda)/(2*self.m))*(self.weights_sum)
         
         if self.loss_type=="LOG":
             return (((1/self.m)*np.sum(-self.log(np.absolute((labels/2)-0.5+pred))))+self.regularization_cost)
