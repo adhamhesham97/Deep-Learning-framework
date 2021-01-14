@@ -41,12 +41,12 @@ class model:
             mini_batches.pop()
         return mini_batches 
     
-    def fit(self, X, label, batch_size,num_epochs,Lambda,optimizer,loss_fn):
+    def fit(self, X, label, batch_size,num_epochs,optimizer,loss_fn):
         loss_history = []
         itr=0
         plt.ion()
         mini_batches = self.create_mini_batches(X, label, batch_size)
-        loss_fn.setLambda(Lambda)
+        Lambda=loss_fn.getLambda()
         for epoch in range (num_epochs):
             
             epoch_loss = 0
@@ -58,7 +58,7 @@ class model:
                 epoch_loss += batch_loss
                 grad = loss_fn.backward()
                 for Layer in self.layers[::-1]:
-                    grad = Layer.backward(grad) 
+                    grad = Layer.backward(grad,Lambda) 
                 optimizer.step(self.layers)
             
             loss_history+=[epoch_loss]
