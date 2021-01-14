@@ -11,19 +11,25 @@ class loss_Function():
         res[np.isneginf(res)]=-9999999
         return res
     
-    def forward(self,pred,labels):
+    def getLambda(self,Lambda):
+        self.Lambda= Lambda
+
+    
+    def forward(self,pred,labels,weights_sum):
         self.m=labels.shape[1]
         self.pred=pred
         self.labels=labels
+        self.weights_sum=weights_sum
+        self.regularization_cost=(self.Lambda)/(2*self.m)*(self.weights_sum)
         
         if self.loss_type=="LOG":
-            return (1/self.m)*np.sum(-np.log(np.absolute((labels/2)-0.5+pred)))
+            return (((1/self.m)*np.sum(-self.log(np.absolute((labels/2)-0.5+pred))))+self.regularization_cost)
         
         elif self.loss_type=="MEAN":
-            return np.sum(np.power(pred-labels,2))/(2*self.m)
+            return ((np.sum(np.power(pred-labels,2))/(2*self.m))+self.regularization_cost)
         
         elif self.loss_type=="CROSSENTROPY":
-            return (-1/self.m)*np.sum(np.multiply(labels, self.log(pred))+np.multiply(1-labels, self.log(1-pred)))
+            return (((-1/self.m)*np.sum(np.multiply(labels, self.log(pred))+np.multiply(1-labels, self.log(1-pred))))+self.regularization_cost)
 
         elif self.loss_type=="SoftmaxCrossEntropy":
             exp = np.exp(pred) # exp of all output nodes
@@ -31,7 +37,7 @@ class loss_Function():
             softmax = exp/sums # softmax output for all nodes
             self.softmax = softmax # cache softmax
             L = -1*self.log(softmax[labels==1]) # individual losses for each example
-            return (1/self.m)*np.sum(L)
+            return (((1/self.m)*np.sum(L))+self.regularization_cost)
 
 
     def backward(self):
