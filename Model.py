@@ -61,7 +61,7 @@ class model:
                 optimizer.step(self.layers)
             
             loss_history+=[epoch_loss]
-            print("Loss at epoch = {} and iteration = {}: {}".format(epoch,itr,loss_history[-1]))
+            print("Loss at epoch = {} and iteration = {}: {:.2f}".format(epoch,itr,loss_history[-1]))
             itr+=1
             visualization(loss_history)
             plt.show(block=True)
