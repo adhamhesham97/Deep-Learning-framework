@@ -17,11 +17,11 @@ class layer():
         self.X = X  # cache input to use it in back prop
         return output
 
-    def backward(self, dA):
+    def backward(self, dA, Lambda):
         # dA dimensions are (number of output nodes) x (number of examples)
         m = dA.shape[1]
         dZ = self.act_func.backward(dA) # dZ = dA . g'(Z) (element wise product)
-        self.dw = (1/m) * dZ @ self.X.T  # dw = dZ * X.T
+        self.dw = (1/m) * dZ @ self.X.T + (Lambda/m) * self.w   # dw = dZ * X.T+(lambda/m) * w 
         self.db = (1/m) * np.sum(dZ, axis=1, keepdims=True) # db = 1/m * sum(dZ)
         grad_input = self.w.T @ dZ
         return grad_input
