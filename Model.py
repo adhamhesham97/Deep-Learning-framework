@@ -41,11 +41,12 @@ class model:
             mini_batches.pop()
         return mini_batches 
     
-    def fit(self, X, label, batch_size,num_epochs,optimizer,loss_fn):
+    def fit(self, X, label, batch_size,num_epochs,Lambda,optimizer,loss_fn):
         loss_history = []
         itr=0
         plt.ion()
         mini_batches = self.create_mini_batches(X, label, batch_size)
+        loss_fn.setLambda(Lambda)
         for epoch in range (num_epochs):
             
             epoch_loss = 0
