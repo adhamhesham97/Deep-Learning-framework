@@ -25,6 +25,15 @@ class loss_Function():
         elif self.loss_type=="CROSSENTROPY":
             return (-1/self.m)*np.sum(np.multiply(labels, self.log(pred))+np.multiply(1-labels, self.log(1-pred)))
 
+        elif self.loss_type=="SoftmaxCrossEntropy":
+            exp = np.exp(pred) # exp of all output nodes
+            sums = np.sum(exp, axis=0) # sum of exponentials of each example
+            softmax = exp/sums # softmax output for all nodes
+            self.softmax = softmax # cache softmax
+            L = -1*self.log(softmax[labels==1]) # individual losses for each example
+            return (1/self.m)*np.sum(L)
+
+
     def backward(self):
         if self.loss_type=="LOG":
             return (((-1/self.pred)*((1+self.labels)/2)) + ((1/(1-self.pred))*((1-self.labels)/2)))
@@ -34,6 +43,9 @@ class loss_Function():
         
         elif self.loss_type=="CROSSENTROPY":
             return ((-self.labels/self.pred)+(1-self.labels/1-self.pred))
+        
+        elif self.loss_type=="SoftmaxCrossEntropy":
+            return (self.softmax - self.labels)
         
         
         
