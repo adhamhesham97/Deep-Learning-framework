@@ -29,6 +29,8 @@ model.fit(Features_Train, Label_Train_hotone,
           batch_size, num_epochs, optim, loss_fn)
 
 
+#%% testing
+
 # test on the same trained data set
 predicted_labels = np.argmax(model.predict(Features_Train), axis=0)
 accuracy = DL.accuracy(predicted_labels, Label_Train)
@@ -38,3 +40,10 @@ print("Accuracy of training dataset = {:.2f}%".format(accuracy*100))
 predicted_labels = np.argmax(model.predict(Features_Test), axis=0)
 accuracy = DL.accuracy(predicted_labels, Label_Test)
 print("Model Accuracy = {:.2f}%".format(accuracy*100))
+
+
+#%% store and load model
+
+# DL.store(model, "CIFAR model") # store
+
+# model = DL.load("CIFAR model") # load

@@ -1,23 +1,22 @@
-from Activation import activation
+from .Activation import activation
 import numpy as np
 
 
 class layer():
-    def __init__(self, in_nodes, out_nodes, activation_type):
+    def __init__(self, in_nodes=0, out_nodes=0, activation_type=""):
         self.w = np.random.randn(out_nodes, in_nodes)*0.01
         self.dw = np.zeros((out_nodes, in_nodes))
         self.b = np.zeros((out_nodes, 1))
         self.db = np.zeros((out_nodes, 1))
         self.act_func = activation(activation_type)
-        self.weights_sum=0
-
+    
     def forward(self, X):
         # X dimensions are (number of input nodes) x (number of examples)
         Z = self.w @ X + self.b  # Z = w * X + b
-        self.weights_sum=np.sum(np.square(self.w))
+        weights_sum=np.sum(np.square(self.w))
         output = self.act_func.forward(Z)  # A = activation(Z)
         self.X = X  # cache input to use it in back prop
-        return output, self.weights_sum
+        return output, weights_sum
 
     def backward(self, dA, Lambda):
         # dA dimensions are (number of output nodes) x (number of examples)
@@ -37,7 +36,14 @@ class layer():
     def setParams(self, w, b):
         self.w = w
         self.b = b
+        
+    def getLayerParams(self):
+        return self.w, self.b, self.act_func.activation_type
 
+    def setLayerParams(self, LayerParams):
+        self.w, self.b , activation_type = LayerParams
+        self.act_func = activation(activation_type)
+        
 '''
 in_nodes = 2
 out_nodes = 3

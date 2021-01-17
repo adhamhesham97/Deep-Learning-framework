@@ -7,15 +7,14 @@ Created on Tue Jan  5 23:47:45 2021
 
 import numpy as np
 import matplotlib.pyplot as plt
-from Layer import layer
-from Visualization import visualization
+from .Layer import layer
+from .Visualization import visualization
 
 class model:
     
     def __init__(self):
         self.layers=[]
-        self.parameters = []
-
+        
         
     def add(self, in_nodes, out_nodes, activation_type):
         l=layer(in_nodes, out_nodes, activation_type)
@@ -54,7 +53,8 @@ class model:
                 A=X
                 weights_sum=0
                 for Layer in self.layers: 
-                    A,weights_sum+ = Layer.forward(A)
+                    A, w_squared = Layer.forward(A)
+                    weights_sum += w_squared 
                     
                 batch_loss = loss_fn.forward(A,label,weights_sum)
                 epoch_loss += batch_loss
@@ -72,9 +72,22 @@ class model:
         
     def predict(self,X):
         for Layer in self.layers: 
-            X = Layer.forward(X)
+            X, _ = Layer.forward(X)
         return X 
     
+    def getParams(self):
+        List=[]
+        for Layer in self.layers:
+            List.append(Layer.getLayerParams())
+        return List
+    
+    def setParams(self, List):
+        for LayerParams in List:
+            Layer = layer()
+            Layer.setLayerParams(LayerParams)
+            self.layers.append(Layer)
+    
+  
 '''  
 m = model()
 m.add(2,2,"Relu")
