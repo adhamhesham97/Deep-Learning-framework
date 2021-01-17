@@ -16,8 +16,23 @@ class model:
         self.layers=[]
         
         
-    def add(self, in_nodes, out_nodes, activation_type):
-        l=layer(in_nodes, out_nodes, activation_type)
+    def add(self, activation_type, in_nodes=0, out_nodes=0, Padding=0, activation_type_conv=''):
+        
+        if(activation_type=='batch_norm'):
+            l=layer(activation_type)
+        
+        elif(activation_type=='maxpool'):
+            l=layer(activation_type, in_nodes, out_nodes)
+        
+        elif(activation_type=='conv'):
+            l=layer(activation_type, in_nodes, out_nodes, Padding)
+        
+        elif(activation_type=='flatten'):
+            l=layer(activation_type)
+        
+        else:
+            l=layer(in_nodes, out_nodes, activation_type)
+        
         self.layers.append(l)
         self
         

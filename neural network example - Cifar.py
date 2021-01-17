@@ -19,9 +19,9 @@ num_of_examples = Features_Train.shape[1]
 Label_Train_hotone = DL.hot_one(Label_Train, num_classes)
 
 model = DL.model()
-model.add(num_of_features, hidden_units, 'Relu')
-model.add(hidden_units, hidden_units, 'Relu')
-model.add(hidden_units, num_classes, 'Linear')
+model.add('Relu', num_of_features, hidden_units)
+model.add('Relu', hidden_units, hidden_units)
+model.add('Linear', hidden_units, num_classes)
 optim = DL.optimizer(0.001)
 loss_fn = DL.loss_Function('SoftmaxCrossEntropy')
 loss_fn.setLambda(0)
