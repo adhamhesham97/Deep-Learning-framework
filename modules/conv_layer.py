@@ -2,7 +2,7 @@ from .Activation import activation
 import numpy as np
 
 class conv_layer():
-    def __init__(self, activation_type="Linear", Filter=2, num_of_filters=5, input_dimensions=(1,1,1), Stride=1, padding=0):
+    def __init__(self,  Filter=2, num_of_filters=5, Stride=1, padding=0, activation_type="Linear", input_dimensions=(1,1,1)):
         
         self.act_func = activation(activation_type)
         self.S = Stride
@@ -126,6 +126,8 @@ class conv_layer():
         
         return dX
 
+    def output_dims(self):
+        return self.n_H, self.n_W, self.n_C
     
     def getParams(self):
         return self.w, self.b

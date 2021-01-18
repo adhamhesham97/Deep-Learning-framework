@@ -8,6 +8,8 @@ Created on Tue Jan  5 23:47:45 2021
 import numpy as np
 import matplotlib.pyplot as plt
 from .Layer import layer
+from .Conv_layer import conv_layer
+from .Pool_layer import pool_layer
 from .Visualization import visualization
 
 class model:
@@ -15,23 +17,34 @@ class model:
     def __init__(self):
         self.layers=[]
         
+    def add(self, *argv):
         
-    def add(self, activation_type, in_nodes=0, out_nodes=0, Padding=0, activation_type_conv=''):
+        layer_type = argv[0]
         
-        if(activation_type=='batch_norm'):
-            l=layer(activation_type)
+        if(layer_type=='maxpool'):
+            Filter_size, input_dimensions, Stride = argv[1:4]
+            input_dimensions=self.layers[-1].output_dims # output dims of previous layer
+            l=pool_layer(Filter_size, Stride, "max", input_dimensions)
         
-        elif(activation_type=='maxpool'):
-            l=layer(activation_type, in_nodes, out_nodes)
+        elif(layer_type=='avgpool'):
+            Filter_size, input_dimensions, Stride = argv[1:4]
+            input_dimensions=self.layers[-1].output_dims # output dims of previous layer
+            l=pool_layer(Filter_size, Stride, "average", input_dimensions)
         
-        elif(activation_type=='conv'):
-            l=layer(activation_type, in_nodes, out_nodes, Padding)
+        elif(layer_type=='conv'):
+            Filter_size, num_of_filters, Stride, padding, activation_type = argv[1:6]
+            input_dimensions = self.layers[-1].output_dims # output dims of previous layer
+            l=conv_layer(Filter_size, num_of_filters, Stride, padding, activation_type, input_dimensions)
         
-        elif(activation_type=='flatten'):
-            l=layer(activation_type)
+        # elif(layer_type=='flatten'):
+        #     l=layer(layer_type)
+        
+        # elif(layer_type=='batch_norm'):
+        #     l=layer(layer_type)
         
         else:
-            l=layer(in_nodes, out_nodes, activation_type)
+            in_nodes, out_nodes = argv[1:3]
+            l=layer(in_nodes, out_nodes, layer_type)
         
         self.layers.append(l)
         self

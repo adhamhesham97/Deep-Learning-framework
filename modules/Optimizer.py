@@ -6,8 +6,8 @@ class optimizer:
         self.lr=learningRate
      
    
-    def step(self,layers,beta):
-        
+    def step(self,layers):
+        beta=0
         v={}
             
         for layer in layers:

@@ -5,3 +5,5 @@ from modules.metrics import *
 from modules.Visualization import *
 from modules.Read_and_process_data import *
 from modules.utilities import *
+from modules.Conv_layer import conv_layer
+from modules.Pool_layer import pool_layer

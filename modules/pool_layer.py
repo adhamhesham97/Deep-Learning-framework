@@ -1,7 +1,7 @@
 import numpy as np
 
 class pool_layer():
-    def __init__(self, Filter=2, input_dimensions=(1,1,1), Stride=1, mode = "max"):
+    def __init__(self, Filter=2, Stride=1, mode = "max", input_dimensions=(1,1,1)):
         
         self.mode = mode # maxpool (max) or average pool (average)
         self.S = Stride
@@ -89,6 +89,9 @@ class pool_layer():
                             
         return dX
    
+    def output_dims(self):
+        return self.n_H, self.n_W, self.n_C
+    
     def getLayerParams(self):
         return self.S, self.n_H, self.n_W, self.n_C, self.FH, self.FW, self.mode
 
