@@ -7,17 +7,17 @@ import DL
 Label_Train, Features_Train, Label_Test, Features_Test = DL.ReadFile("H:\\4th comp\\NN\\cifar-10-batches-py")
 
 # tronsform to dimensions (m, h, w, c)
-Features_Train = Features_Train.T.reshape(-1,3,32,32).transpose(0, 2, 3, 1)
-Features_Test = Features_Test.T.reshape(-1,3,32,32).transpose(0, 2, 3, 1)
+Features_Train = Features_Train.T.reshape(-1,3,32,32).transpose(0, 2, 3, 1)/255
+Features_Test = Features_Test.T.reshape(-1,3,32,32).transpose(0, 2, 3, 1)/255
 
-Features_Train_small = Features_Train[0:10000] #choose the first 10000 examples only
-Features_Test_small = Features_Test[0:1000] #choose the first 1000 examples only
+Features_Train_small = Features_Train[0:1000] #choose the first 10000 examples only
+Features_Test_small = Features_Test[0:100] #choose the first 1000 examples only
 
 
 #%% training
 
-batch_size = 256
-num_epochs = 3
+batch_size = 25
+num_epochs = 40
 num_classes = 10
 hidden_units = 100
 
@@ -38,9 +38,9 @@ model.input_dims(input_dimensions)
 model.add('conv', (3, 3), 32, 1, 1, "Relu")
 model.add('maxpool', (2, 2), 2)
 model.add('flatten')
-# model.add('Relu', hidden_units)
+model.add('Relu', hidden_units)
 model.add('Linear', num_classes)
-optim = DL.optimizer(0.001)
+optim = DL.optimizer(0.1, 0.9)
 loss_fn = DL.loss_Function('SoftmaxCrossEntropy')
 loss_fn.setLambda(0)
 model.fit(Features_Train_small, Label_Train_hotone,
@@ -50,9 +50,9 @@ model.fit(Features_Train_small, Label_Train_hotone,
 #%% testing
 
 # test on the same trained data set
-# predicted_labels = np.argmax(model.predict(Features_Train_small), axis=0)
-# accuracy = DL.accuracy(predicted_labels, Label_Train)
-# print("Accuracy of training dataset = {:.2f}%".format(accuracy*100))
+predicted_labels = np.argmax(model.predict(Features_Train_small), axis=0)
+accuracy = DL.accuracy(predicted_labels, Label_Train)
+print("Accuracy of training dataset = {:.2f}%".format(accuracy*100))
 
 # test on the test data set
 predicted_labels = np.argmax(model.predict(Features_Test_small), axis=0)
