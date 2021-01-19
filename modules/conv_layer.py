@@ -30,12 +30,14 @@ class conv_layer():
     def zero_pad(self, X, P):
         return np.pad(X, ((0,0), (P,P),(P,P), (0,0)), mode='constant', constant_values = (0,0))
         
-    def conv_single_step(self, X_slice_prev, W, b):
-        s = np.multiply(X_slice_prev, W)
-        # Sum over all entries of the volume s.
-        Z = np.sum(s)
-        # Add bias b to Z. Cast b to a float() so that Z results in a scalar value.
-        Z+=float(b) 
+    def conv(self, X_slice, filters, b):
+        m, FH, FW, n_C_prev = X_slice.shape
+        X_slice = X_slice.reshape(m, FH,FW,n_C_prev,1)
+        s = np.multiply(X_slice, filters)
+        Z = np.sum(s,axis=(1,2,3),keepdims=True)
+        Z+=b 
+        n_C = b.shape[3]
+        Z=Z.reshape(m,n_C)
         return Z
     
     def forward(self, X):
@@ -46,26 +48,20 @@ class conv_layer():
         m, _,_,_ = X.shape
         
         # filter dimensions
-        FH, FW, _,_ = self.filters.shape
+        FH, FW, n_C_prev,_ = self.filters.shape
         
         # output array
         Z = np.zeros((m, self.n_H, self.n_W, self.n_C))
         
-        for i in range(m):                      # loop over the batch of training examples
-            X_prev_pad = X_pad[i,:,:,:]         # Select ith training example's padded activation
-            for h in range(self.n_H):           # loop over vertical axis of the output volume
-                # Find the vertical start and end of the current "slice" (≈2 lines)
+        for h in range(self.n_H):         
+            for w in range(self.n_W):  
                 vert_start = h * self.S
                 vert_end = vert_start + FH
-                for w in range(self.n_W):       # loop over horizontal axis of the output volume
-                    # Find the horizontal start and end of the current "slice" (≈2 lines)
-                    horiz_start = w * self.S
-                    horiz_end = horiz_start + FW
-                    for c in range(self.n_C):   # loop over channels (= #filters) of the output volume
-                        # Use the corners to define the (3D) slice of a_prev_pad (See Hint above the cell). (≈1 line)
-                        X_slice_prev = X_prev_pad[vert_start:vert_end,horiz_start:horiz_end,:]
-                        # Convolve the (3D) slice with the correct filter W and bias b, to get back one output neuron. (≈3 line)
-                        Z[i, h, w, c] = self.conv_single_step(X_slice_prev, self.filters[:,:,:,c], self.b[:,:,:,c])
+                horiz_start = w * self.S
+                horiz_end = horiz_start + FW
+            
+                X_slice = X_pad[:, vert_start:vert_end, horiz_start:horiz_end, :]
+                Z[:, h, w] = self.conv(X_slice, self.filters, self.b)
                         
         A = self.act_func.forward(Z)
         assert(A.shape == (m, self.n_H, self.n_W, self.n_C))
@@ -91,36 +87,21 @@ class conv_layer():
         dA = self.act_func.backward(dA) 
         
         # back propagate from convolution
-        for i in range(m):                       # loop over the training examples
+        for h in range(self.n_H):                   # loop over vertical axis of the output volume
+            for w in range(self.n_W):               # loop over horizontal axis of the output volume
+                vert_start = h*self.S
+                vert_end = vert_start + FH
+                horiz_start = w*self.S
+                horiz_end = horiz_start + FW
+                
+                x_slice = X_pad[: ,vert_start:vert_end, horiz_start:horiz_end, :]
+                dX_pad[:, vert_start:vert_end, horiz_start:horiz_end, :] += np.sum(self.filters[:,:,:,:] * dA[:, h, w, :].reshape(m,1,1,1,self.n_C), axis=4)
+                dfilters += np.sum(x_slice * dA[:, h, w, :].T.reshape(self.n_C,m,1,1,1), axis=1).transpose(1,2,3,0)
+                db += np.sum(dA[:, h, w, :],axis=0)
         
-            # select ith training example from A_prev_pad and dA_prev_pad
-            x_pad = X_pad[i]
-            dx_pad = dX_pad[i]
-            
-            for h in range(self.n_H):                   # loop over vertical axis of the output volume
-                for w in range(self.n_W):               # loop over horizontal axis of the output volume
-                    for c in range(self.n_C):           # loop over the channels of the output volume
-                        
-                        # Find the corners of the current "slice"
-                        vert_start = h*self.S
-                        vert_end = vert_start + FH
-                        horiz_start = w*self.S
-                        horiz_end = horiz_start + FW
-                        
-                        # Use the corners to define the slice from a_prev_pad
-                        x_slice = x_pad[vert_start:vert_end, horiz_start:horiz_end, :]
+        pad=self.P
+        dX = dX_pad[:, pad:-pad, pad:-pad, :]
     
-                        # Update gradients for the window and the filter's parameters using the code formulas given above
-                        dx_pad[vert_start:vert_end, horiz_start:horiz_end, :] += self.filters[:,:,:,c] * dA[i, h, w, c]
-                        dfilters[:,:,:,c] += x_slice * dA[i, h, w, c]
-                        db[:,:,:,c] += dA[i, h, w, c]
-                        
-            
-            # Set the ith training example's dA_prev to the unpaded da_prev_pad (Hint: use X[pad:-pad, pad:-pad, :])
-            pad=self.P
-            dX[i, :, :, :] = dx_pad[pad:-pad, pad:-pad, :]
-        
-        
         self.dfilters=dfilters
         self.db=db
         
@@ -156,7 +137,7 @@ num_of_filters = 8
 input_dimensions = (4, 4, 3)
 Stride = 2 
 padding = 2
-conv = conv_layer(activation_type, Filter, num_of_filters, input_dimensions, Stride, padding)
+conv = conv_layer(Filter, num_of_filters, Stride, padding, activation_type, input_dimensions)
 
 np.random.seed(1)
 X = np.random.randn(10,4,4,3)

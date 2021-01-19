@@ -10,11 +10,11 @@ Label_Train, Features_Train, Label_Test, Features_Test = DL.ReadFile("H:\\4th co
 Features_Train = Features_Train.T.reshape(-1,28,28,1)
 Features_Test = Features_Test.T.reshape(-1,28,28,1)
 
-Features_Train_small = Features_Train[0:1000] #choose the first 1000 examples only
-Features_Test_small = Features_Test[0:100] #choose the first 100 examples only
+Features_Train_small = Features_Train[0:10000] #choose the first 1000 examples only
+Features_Test_small = Features_Test[0:1000] #choose the first 100 examples only
 #%% training
 
-batch_size = 16
+batch_size = 256
 num_epochs = 1
 num_classes = 10
 hidden_units = 100
@@ -39,7 +39,7 @@ model.add('maxpool', (2, 2), 2)
 model.add('flatten')
 # model.add('Relu', hidden_units)
 model.add('Linear', num_classes)
-optim = DL.optimizer(0.001)
+optim = DL.optimizer(0.0001)
 loss_fn = DL.loss_Function('SoftmaxCrossEntropy')
 loss_fn.setLambda(0)
 

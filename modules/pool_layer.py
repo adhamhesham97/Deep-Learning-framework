@@ -32,26 +32,22 @@ class pool_layer():
         # output array
         A = np.zeros((m, self.n_H, self.n_W, self.n_C))
         
-        for i in range(m):                      # loop over the batch of training examples
-            for h in range(self.n_H):           # loop over vertical axis of the output volume
-                for w in range(self.n_W):       # loop over horizontal axis of the output volume
-                    for c in range(self.n_C):   # loop over channels (= #filters) of the output volume
-                   
-                        # Find the corners of the current "slice"
-                        vert_start = h * self.S
-                        vert_end = vert_start + self.FH
-                        horiz_start = w * self.S
-                        horiz_end = horiz_start + self.FW
+        for h in range(self.n_H):           # loop over vertical axis of the output volume
+            for w in range(self.n_W):       # loop over horizontal axis of the output volume
+                
+                    vert_start = h * self.S
+                    vert_end = vert_start + self.FH
+                    horiz_start = w * self.S
+                    horiz_end = horiz_start + self.FW
+                    
+                    x_slice = X[:, vert_start:vert_end, horiz_start:horiz_end, :]
+                    
+                    # Compute the pooling operation on the slice. Use an if statment to differentiate the modes. Use np.max/np.mean.
+                    if self.mode == "max":
+                        A[:, h, w, :] = np.max(x_slice,axis=(1,2))
                         
-                        # Use the corners to define the current slice on the ith training example of A_prev, channel c. (≈1 line)
-                        a_prev_slice = X[i, vert_start:vert_end, horiz_start:horiz_end, c]
-                        
-                        # Compute the pooling operation on the slice. Use an if statment to differentiate the modes. Use np.max/np.mean.
-                        if self.mode == "max":
-                            A[i, h, w, c] = np.max(a_prev_slice)
-                            
-                        elif self.mode == "average":
-                            A[i, h, w, c] = np.mean(a_prev_slice)    
+                    elif self.mode == "average":
+                        A[:, h, w, :] = np.mean(x_slice,axis=(1,2))    
         
         self.X = X # cache input for backprop
         return A
@@ -60,33 +56,29 @@ class pool_layer():
         # number of examples
         m, _,_,_ = dA.shape
         
+        # output vector
         dX = np.zeros(self.X.shape)
         
-        for i in range(m):                       # loop over the training examples                                        
-            x = self.X[i]                        # select training example from A_prev 
-            for h in range(self.n_H):                 # loop on the vertical axis
-                for w in range(self.n_W):             # loop on the horizontal axis
-                    for c in range(self.n_C):         # loop over the channels (depth)
-                        # Find the corners of the current "slice" 
-                        vert_start = h * self.S
-                        vert_end = vert_start + self.FH
-                        horiz_start = w * self.S
-                        horiz_end = horiz_start + self.FW
+        n_C = self.n_C
+        x = self.X
+        for h in range(self.n_H):                 # loop on the vertical axis
+            for w in range(self.n_W):             # loop on the horizontal axis
+                    
+                vert_start = h * self.S
+                vert_end = vert_start + self.FH
+                horiz_start = w * self.S
+                horiz_end = horiz_start + self.FW
+                
+                if self.mode == "max":
+                    x_slice = x[:,vert_start:vert_end, horiz_start:horiz_end, :]
+                    mask = (x_slice == np.amax(x_slice,axis=(1,2),keepdims=True))
+                    # Set dA_prev to be dA_prev + (the mask multiplied by the correct entry of dA) 
+                    dX[:, vert_start:vert_end, horiz_start:horiz_end, :] += np.multiply(mask, dA[:, h, w, :].reshape(m,1,1,n_C))
+                
+                elif self.mode == "average":
+                    # Distribute it to get the correct slice of dA_prev. i.e. Add the distributed value of da. 
+                    dX[:, vert_start: vert_end, horiz_start: horiz_end, :] += dA[:,h,w,:].reshape(m,1,1,n_C)/(self.FW*self.FH)
                         
-                        # Compute the backward propagation in both modes.
-                        if self.mode == "max":
-                            # Use the corners and "c" to define the current slice from a_prev 
-                            x_slice = x[vert_start:vert_end, horiz_start:horiz_end, c]
-                            # Create the mask from a_prev_slice 
-                            mask = (x_slice == np.max(x_slice))
-                            # Set dA_prev to be dA_prev + (the mask multiplied by the correct entry of dA) 
-                            dX[i, vert_start:vert_end, horiz_start:horiz_end, c] += np.multiply(mask, dA[i, h, w, c])
-                        elif self.mode == "average":
-                            # Get the value a from dA 
-                            da = dA[i,h,w,c]
-                            # Distribute it to get the correct slice of dA_prev. i.e. Add the distributed value of da. 
-                            dX[i, vert_start: vert_end, horiz_start: horiz_end, c] += da/(self.FW*self.FH)
-                            
         return dX
     
     def getGrads(self):
@@ -108,8 +100,8 @@ class pool_layer():
 F = 3
 S = 2
 input_dims = (4, 4, 3)
-maxpool = pool_layer(F, input_dims, S)
-avgpool = pool_layer(F, input_dims, S, 'average')
+maxpool = pool_layer(F, S, "max", input_dims)
+avgpool = pool_layer(F, S, 'average', input_dims)
 
 np.random.seed(1)
 X = np.random.randn(2, 4, 4, 3)
@@ -122,8 +114,8 @@ print("avgpool forward:\n",avgpool.forward(X))
 F = 2
 S = 1
 input_dims = (5, 3, 2)
-maxpool = pool_layer(F, input_dims, S)
-avgpool = pool_layer(F, input_dims, S, 'average')
+maxpool = pool_layer(F, S, "max", input_dims)
+avgpool = pool_layer(F, S, 'average', input_dims)
 
 np.random.seed(1)
 X = np.random.randn(5, 5, 3, 2)

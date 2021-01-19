@@ -125,7 +125,7 @@ class model:
                 optimizer.step(self.layers)
                 done = int(100*current_batch/num_of_batches)
                 ETA = int(time.time() - start_time) * (num_of_batches-current_batch)
-                print('\repoch:{}/{} [{}{}] {}% ETA:{}'.format(epoch, num_epochs,'█' * int(done/2), '.' * int(50-done/2), done, format_time(ETA)), end='\r')
+                print('\repoch:{}/{} [{}{}] {}% ETA:{}'.format(epoch+1, num_epochs,'█' * int(done/2), '.' * int(50-done/2), done, format_time(ETA)), end='\r')
                 
             
             loss_history+=[epoch_loss]
