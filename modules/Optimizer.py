@@ -15,19 +15,22 @@ class optimizer:
         i=0
         for layer in layers:
             
-            w,b=layer.getParams()
-            dw,db=layer.getGrads()
-            v["dW"+str(i+1)]=np.zeros(dw.shape)
-            v["db"+str(i+1)]=np.zeros(db.shape)
-           
-            v["dW"+str(i+1)]=self.beta*v["dW"+str(i+1)]+(1-self.beta)*dw
-            v["db"+str(i+1)]=self.beta*v["db"+str(i+1)]+(1-self.beta)*db
+            grads = layer.getGrads()
             
-            #updating the layer parameters 
-            w=w-self.lr*v["dW"+str(i+1)]
-            b=b-self.lr*v["db"+str(i+1)]
-            i=i+1
-            
-            #storing the new parameters in layer
-            layer.setParams(w,b)
+            if(grads is not None):
+                dw,db = grads
+                w,b=layer.getParams()
+                v["dW"+str(i+1)]=np.zeros(dw.shape)
+                v["db"+str(i+1)]=np.zeros(db.shape)
+               
+                v["dW"+str(i+1)]=self.beta*v["dW"+str(i+1)]+(1-self.beta)*dw
+                v["db"+str(i+1)]=self.beta*v["db"+str(i+1)]+(1-self.beta)*db
+                
+                #updating the layer parameters 
+                w=w-self.lr*v["dW"+str(i+1)]
+                b=b-self.lr*v["db"+str(i+1)]
+                i=i+1
+                
+                #storing the new parameters in layer
+                layer.setParams(w,b)
             

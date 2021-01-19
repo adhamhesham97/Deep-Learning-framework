@@ -130,7 +130,7 @@ class conv_layer():
         return self.n_H, self.n_W, self.n_C
     
     def getParams(self):
-        return self.w, self.b
+        return self.filters, self.b
 
     def getGrads(self):
         return self.dfilters, self.db    
@@ -140,7 +140,8 @@ class conv_layer():
         self.b = b
         
     def getLayerParams(self):
-        return self.filters, self.b, self.S, self.P, self.n_H, self.n_W, self.n_C, self.act_func.activation_type
+        LayerParams = self.filters, self.b, self.S, self.P, self.n_H, self.n_W, self.n_C, self.act_func.activation_type
+        return "conv_layer", LayerParams
 
     def setLayerParams(self, LayerParams):
         self.filters, self.b, self.S, self.P, self.n_H, self.n_W, self.n_C, activation_type = LayerParams

@@ -27,6 +27,9 @@ class layer():
         grad_input = self.w.T @ dZ
         return grad_input
 
+    def output_dims(self):
+        return self.b.shape[0]
+    
     def getParams(self):
         return self.w, self.b
 
@@ -38,7 +41,8 @@ class layer():
         self.b = b
         
     def getLayerParams(self):
-        return self.w, self.b, self.act_func.activation_type
+        LayerParams = self.w, self.b, self.act_func.activation_type
+        return "layer", LayerParams
 
     def setLayerParams(self, LayerParams):
         self.w, self.b , activation_type = LayerParams

@@ -30,7 +30,7 @@ class pool_layer():
         m, _,_,_ = X.shape
         
         # output array
-        A = np.zeros([m, self.n_H, self.n_W, self.n_C])
+        A = np.zeros((m, self.n_H, self.n_W, self.n_C))
         
         for i in range(m):                      # loop over the batch of training examples
             for h in range(self.n_H):           # loop over vertical axis of the output volume
@@ -88,12 +88,16 @@ class pool_layer():
                             dX[i, vert_start: vert_end, horiz_start: horiz_end, c] += da/(self.FW*self.FH)
                             
         return dX
-   
+    
+    def getGrads(self):
+        return None
+    
     def output_dims(self):
         return self.n_H, self.n_W, self.n_C
     
     def getLayerParams(self):
-        return self.S, self.n_H, self.n_W, self.n_C, self.FH, self.FW, self.mode
+        LayerParams = self.S, self.n_H, self.n_W, self.n_C, self.FH, self.FW, self.mode
+        return "pool_layer", LayerParams
 
     def setLayerParams(self, LayerParams):
         self.S, self.n_H, self.n_W, self.n_C, self.FH, self.FW, self.mode = LayerParams
