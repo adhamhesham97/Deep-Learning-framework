@@ -64,9 +64,9 @@ class pool_layer():
         for h in range(self.n_H):                 # loop on the vertical axis
             for w in range(self.n_W):             # loop on the horizontal axis
                     
-                vert_start = h * self.S
+                vert_start = h
                 vert_end = vert_start + self.FH
-                horiz_start = w * self.S
+                horiz_start = w
                 horiz_end = horiz_start + self.FW
                 
                 if self.mode == "max":

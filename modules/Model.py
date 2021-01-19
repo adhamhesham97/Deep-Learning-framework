@@ -129,7 +129,7 @@ class model:
                 
             
             loss_history+=[epoch_loss]
-            print("\nLoss at epoch {} = {:.3f}".format(epoch,loss_history[-1]))
+            print("\nLoss at epoch {} = {:.3f}".format(epoch+1,loss_history[-1]))
             visualization(loss_history)
             plt.show(block=True)
         return loss_history 
@@ -155,7 +155,7 @@ class model:
             elif(LayerType == "conv_layer"): Layer = conv_layer()
             elif(LayerType == "pool_layer"): Layer = pool_layer()
             elif(LayerType=='flatten'): Layer = flatten()
-            # elif(LayerType=='batch_norm'): Layer = batch_norm
+            # elif(LayerType=='batch_norm'): Layer = batch_norm()
             Layer.setLayerParams(LayerParams)
             self.layers.append(Layer)
     
