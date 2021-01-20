@@ -33,8 +33,8 @@ def ReadFile(path):
         Temp1= FullMatrix_Test[:,1:]
         Features_Test=Temp1.transpose()
         
-        Features_Train = Features_Train.T.reshape(-1,28,28,1)
-        Features_Test = Features_Test.T.reshape(-1,28,28,1)
+        Features_Train = Features_Train.T.reshape(-1,28,28,1).transpose(0,3,1,2)
+        Features_Test = Features_Test.T.reshape(-1,28,28,1).transpose(0,3,1,2)
         
         
         
@@ -63,8 +63,8 @@ def ReadFile(path):
         Features_Train=Features_Train.reshape((-1,3072))
         Features_Train=Features_Train.transpose()
         Features_Test=Features_Test.transpose()
-        Features_Train = Features_Train.T.reshape(-1,3,32,32).transpose(0, 2, 3, 1)
-        Features_Test = Features_Test.T.reshape(-1,3,32,32).transpose(0, 2, 3, 1)
+        Features_Train = Features_Train.T.reshape(-1,3,32,32)
+        Features_Test = Features_Test.T.reshape(-1,3,32,32)
 
 
 
@@ -82,12 +82,12 @@ def ReadFile(path):
 
 
 
-path=input("Write Directory Path:" )                #Path of dataset
-Label_Train,Features_Train,Label_Test,Features_Test=ReadFile(path)
-print(Label_Test)
-print(Features_Test)
-print(Label_Train)
-print(Features_Train)
+# path=input("Write Directory Path:" )                #Path of dataset
+# Label_Train,Features_Train,Label_Test,Features_Test=ReadFile(path)
+# print(Label_Test)
+# print(Features_Test)
+# print(Label_Train)
+# print(Features_Train)
 
 
 

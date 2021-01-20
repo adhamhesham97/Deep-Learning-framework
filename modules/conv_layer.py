@@ -2,6 +2,7 @@ from .Activation import activation
 import numpy as np
 
 class conv_layer():
+   
     def __init__(self,  Filter=2, num_of_filters=5, Stride=1, padding=0, activation_type="Linear", input_dimensions=(1,1,1)):
         
         self.act_func = activation(activation_type)
@@ -18,93 +19,76 @@ class conv_layer():
         n_H_prev, n_W_prev, n_C_prev = input_dimensions 
         
         # layer parameters
-        # filters dimensions are (h,w,c,n)
-        self.filters = np.random.randn(FH, FW, n_C_prev, num_of_filters) * 0.01
-        self.b = np.zeros((1,1,1,num_of_filters))
+        # filters dimensions are (n,c,h,w)
+        self.filters = np.random.randn(num_of_filters, n_C_prev, FH, FW ) * 0.01
+        self.b = np.zeros(num_of_filters)
         
         # the dimensions of output
         self.n_H = int(((n_H_prev+2*self.P-FH)/self.S)+1)
         self.n_W = int(((n_W_prev+2*self.P-FW)/self.S)+1)
         self.n_C = num_of_filters
         
-    def zero_pad(self, X, P):
-        return np.pad(X, ((0,0), (P,P),(P,P), (0,0)), mode='constant', constant_values = (0,0))
-        
-    def conv(self, X_slice, filters, b):
-        m, FH, FW, n_C_prev = X_slice.shape
-        X_slice = X_slice.reshape(m, FH,FW,n_C_prev,1)
-        s = np.multiply(X_slice, filters)
-        Z = np.sum(s,axis=(1,2,3),keepdims=True)
-        Z+=b 
-        n_C = b.shape[3]
-        Z=Z.reshape(m,n_C)
-        return Z
-    
     def forward(self, X):
-        # X dimensions are (m,h,w,c)
-        X_pad = self.zero_pad(X, self.P)
-        
+        # X dimensions are (n,c,h,w)
         # number of examples
         m, _,_,_ = X.shape
         
         # filter dimensions
-        FH, FW, n_C_prev,_ = self.filters.shape
+        n_F, n_C_prev, FH, FW = self.filters.shape
         
-        # output array
-        Z = np.zeros((m, self.n_H, self.n_W, self.n_C))
+        X_col = im2col(X, FH, FW, self.S, self.P)
+        filter_col = self.filters.reshape((n_F, -1))
+        b_col = self.b.reshape(-1, 1)
+       
+        # Perform matrix multiplication.
+        out = filter_col @ X_col + b_col
         
-        for h in range(self.n_H):         
-            for w in range(self.n_W):  
-                vert_start = h * self.S
-                vert_end = vert_start + FH
-                horiz_start = w * self.S
-                horiz_end = horiz_start + FW
-            
-                X_slice = X_pad[:, vert_start:vert_end, horiz_start:horiz_end, :]
-                Z[:, h, w] = self.conv(X_slice, self.filters, self.b)
-                        
-        A = self.act_func.forward(Z)
-        assert(A.shape == (m, self.n_H, self.n_W, self.n_C))
-        self.X = X # cache input for backprop
-        return A
+        # Reshape back matrix to image.
+        out = np.array(np.hsplit(out, m)).reshape(m, self.n_C, self.n_H, self.n_W)
+        
+        # apply activation function
+        out = self.act_func.forward(out)
+        
+        #Cache inputs for back propagation
+        self.cache = X.shape, X_col, filter_col
+        
+        return out
 
     def backward(self, dA):
+        # dA dimensions are (n,c,h,w)
         # number of examples
         m, _,_,_ = dA.shape
         
-        # output arrays
-        dX = np.zeros(self.X.shape)                           
-        dfilters = np.zeros(self.filters.shape)
-        db = np.zeros(self.b.shape)
-        
-        X_pad = self.zero_pad(self.X, self.P)
-        dX_pad = self.zero_pad(dX, self.P)
+        # retieve cache
+        X_shape, X_col, filter_col = self.cache
         
         # filter dimensions
-        FH, FW, _,_ = self.filters.shape
+        _, n_C_prev, FH, FW = self.filters.shape
         
         # back propagate from activation function
         dA = self.act_func.backward(dA) 
         
         # back propagate from convolution
-        for h in range(self.n_H):                   # loop over vertical axis of the output volume
-            for w in range(self.n_W):               # loop over horizontal axis of the output volume
-                vert_start = h*self.S
-                vert_end = vert_start + FH
-                horiz_start = w*self.S
-                horiz_end = horiz_start + FW
-                
-                x_slice = X_pad[: ,vert_start:vert_end, horiz_start:horiz_end, :]
-                dX_pad[:, vert_start:vert_end, horiz_start:horiz_end, :] += np.sum(self.filters[:,:,:,:] * dA[:, h, w, :].reshape(m,1,1,1,self.n_C), axis=4)
-                dfilters += np.sum(x_slice * dA[:, h, w, :].T.reshape(self.n_C,m,1,1,1), axis=1).transpose(1,2,3,0)
-                db += np.sum(dA[:, h, w, :],axis=0)
+        # Compute bias gradient.
+        self.db = np.sum(dA, axis=(0,2,3))
         
-        pad=self.P
-        dX = dX_pad[:, pad:-pad, pad:-pad, :]
+        # Reshape dA
+        dA = dA.reshape(dA.shape[0] * dA.shape[1], dA.shape[2] * dA.shape[3])
+        dA = np.array(np.vsplit(dA, m))
+        dA = np.concatenate(dA, axis=-1)
+        
+        # Perform matrix multiplication between reshaped dout and filter_col to get dX_col.
+        dX_col = filter_col.T @ dA
+        
+        # Perform matrix multiplication between reshaped dout and X_col to get dfilter_col.
+        dfilter_col = dA @ X_col.T
+        
+        # Reshape back to image (col2im).
+        dX = col2im(dX_col, X_shape, FH, FW, self.S, self.P)
+        
+        # Reshape dfilter_col into dw.
+        self.dfilters = dfilter_col.reshape((dfilter_col.shape[0], n_C_prev, FH, FW))
     
-        self.dfilters=dfilters
-        self.db=db
-        
         return dX
 
     def output_dims(self):
@@ -129,6 +113,85 @@ class conv_layer():
         self.act_func = activation(activation_type)
 
 
+
+
+def get_indices(X_shape, HF, WF, stride, pad):
+    
+    # get input size
+    m, n_C, n_H, n_W = X_shape
+
+    # get output size
+    out_h = int((n_H + 2 * pad - HF) / stride) + 1
+    out_w = int((n_W + 2 * pad - WF) / stride) + 1
+  
+    # ----Compute matrix of index i----
+
+    # Level 1 vector.
+    level1 = np.repeat(np.arange(HF), WF)
+    # Duplicate for the other channels.
+    level1 = np.tile(level1, n_C)
+    # Create a vector with an increase by 1 at each level.
+    everyLevels = stride * np.repeat(np.arange(out_h), out_w)
+    # Create matrix of index i at every levels for each channel.
+    i = level1.reshape(-1, 1) + everyLevels.reshape(1, -1)
+
+    # ----Compute matrix of index j----
+    
+    # Slide 1 vector.
+    slide1 = np.tile(np.arange(WF), HF)
+    # Duplicate for the other channels.
+    slide1 = np.tile(slide1, n_C)
+    # Create a vector with an increase by 1 at each slide.
+    everySlides = stride * np.tile(np.arange(out_w), out_h)
+    # Create matrix of index j at every slides for each channel.
+    j = slide1.reshape(-1, 1) + everySlides.reshape(1, -1)
+
+    # ----Compute matrix of index d----
+
+    # This is to mark delimitation for each channel
+    # during multi-dimensional arrays indexing.
+    d = np.repeat(np.arange(n_C), HF * WF).reshape(-1, 1)
+
+    return i, j, d
+
+def im2col(X, HF, WF, stride, pad):
+
+    # Padding
+    X_padded = np.pad(X, ((0,0), (0,0), (pad, pad), (pad, pad)), mode='constant')
+    i, j, d = get_indices(X.shape, HF, WF, stride, pad)
+    
+    # Multi-dimensional arrays indexing.
+    cols = X_padded[:, d, i, j]
+    cols = np.concatenate(cols, axis=-1)
+    return cols
+
+def col2im(dX_col, X_shape, HF, WF, stride, pad):
+    # Get input size
+    N, D, H, W = X_shape
+    
+    H_padded, W_padded = H + 2 * pad, W + 2 * pad
+    X_padded = np.zeros((N, D, H_padded, W_padded))
+    
+    # Index matrices, necessary to transform our input image into a matrix. 
+    i, j, d = get_indices(X_shape, HF, WF, stride, pad)
+    
+    # Retrieve batch dimension by spliting dX_col N times: (X, Y) => (N, X, Y)
+    dX_col_reshaped = np.array(np.hsplit(dX_col, N))
+    
+    # Reshape our matrix back to image.
+    # slice(None) is used to produce the [::] effect which means "for every elements".
+    np.add.at(X_padded, (slice(None), d, i, j), dX_col_reshaped)
+    
+    # Remove padding from new image if needed.
+    if pad == 0:
+        return X_padded
+    elif type(pad) is int:
+        return X_padded[:, :,pad:-pad, pad:-pad]
+    
+    
+
+
+
 # forward and backward propagation
 '''
 activation_type="Linear"
@@ -140,17 +203,19 @@ padding = 2
 conv = conv_layer(Filter, num_of_filters, Stride, padding, activation_type, input_dimensions)
 
 np.random.seed(1)
-X = np.random.randn(10,4,4,3)
-filters = np.random.randn(2,2,3,8)
-b = np.random.randn(1,1,1,8)
+X = np.random.randn(10,4,4,3).transpose(0,3,1,2)
+filters = np.random.randn(2,2,3,8).transpose(3,2,0,1)
+b = np.random.randn(8)
 conv.setParams(filters, b)
 
 A = conv.forward(X)
-print("A's mean =", np.mean(A))
-print("A[3,2,1] =", A[3,2,1])
+print("A's mean =", np.mean(A.transpose(0,2,3,1)))
+print("A[3,2,1] =", A.transpose(0,2,3,1)[3,2,1])
 
-dX=conv.backward(A)
+dX = conv.backward(A).transpose(0,2,3,1)
 dfilters, db = conv.getGrads()
+dfilters = dfilters.transpose(3,2,0,1)
+db = db
 print("dX_mean =", np.mean(dX))
 print("dfilters_mean =", np.mean(dfilters))
 print("db_mean =", np.mean(db))

@@ -7,8 +7,8 @@ import DL
 Label_Train, Features_Train, Label_Test, Features_Test = DL.ReadFile("H:\\4th comp\\NN\\cifar-10-batches-py")
 
 # tronsform to dimensions (m, h, w, c)
-Features_Train = Features_Train.T.reshape(-1,3,32,32).transpose(0, 2, 3, 1)/255
-Features_Test = Features_Test.T.reshape(-1,3,32,32).transpose(0, 2, 3, 1)/255
+# Features_Train = Features_Train.T.reshape(-1,3,32,32)#.transpose(0, 2, 3, 1)/255
+# Features_Test = Features_Test.T.reshape(-1,3,32,32)#.transpose(0, 2, 3, 1)/255
 
 Features_Train_small = Features_Train[0:1000] #choose the first 10000 examples only
 Features_Test_small = Features_Test[0:100] #choose the first 1000 examples only
@@ -16,8 +16,8 @@ Features_Test_small = Features_Test[0:100] #choose the first 1000 examples only
 
 #%% training
 
-batch_size = 25
-num_epochs = 40
+batch_size = 256
+num_epochs = 10
 num_classes = 10
 hidden_units = 100
 
@@ -40,7 +40,7 @@ model.add('maxpool', (2, 2), 2)
 model.add('flatten')
 model.add('Relu', hidden_units)
 model.add('Linear', num_classes)
-optim = DL.optimizer(0.1, 0.9)
+optim = DL.optimizer(0.0001, 0.9)
 loss_fn = DL.loss_Function('SoftmaxCrossEntropy')
 loss_fn.setLambda(0)
 model.fit(Features_Train_small, Label_Train_hotone,
