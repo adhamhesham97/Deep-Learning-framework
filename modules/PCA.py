@@ -60,13 +60,13 @@ data = pd.read_csv(url, names=['sepal length', 'sepal width', 'petal length', 'p
 x = data.iloc[:, 0:4]
 # prepare the target
 target = data.iloc[:, 4]
-# Applying it to PCA function
+
+# Applying it to PCA function(how to use PCA class)
+
 pca=PCA(2)  #using no. components
 #pca=PCA(0.98)  #using variance
 pca.fit(x)
 mat_reduced = pca.transform(x)
-a = np.array(mat_reduced)
-print(a.shape)
 
 # Creating a Pandas DataFrame of reduced Dataset
 principal_df = pd.DataFrame(mat_reduced, columns=['PC1', 'PC2'])
