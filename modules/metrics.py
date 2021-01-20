@@ -76,3 +76,27 @@ def F1_score(predicted,actual):
 #f1 = F1_score(y_predicted,y_actual)
 #print (f1)
 
+def confusion_matrix(predicted, actual):
+
+    conf_arr = [[0, 0],
+                [0, 0]]
+
+    for i in range(len(predicted)):
+        if int(actual[i]) == 0:
+            if predicted[i] == 0 :
+                conf_arr[0][0] = conf_arr[0][0] + 1
+            elif predicted[i] == 1 :
+                conf_arr[1][0] = conf_arr[1][0] + 1
+        elif int(actual[i]) == 1:
+            if predicted[i] == 0 :
+                conf_arr[0][1] = conf_arr[0][1] + 1
+            elif predicted[i] == 1 :
+                conf_arr[1][1] = conf_arr[1][1] + 1
+    return conf_arr
+
+#test for confusion matrix
+#y_actual = [1,1,0,0,1,0,0,1,0,1,1,1,0,1]
+#y_predicted   = [0,1,1,0,1,0,0,0,0,0,0,0,1,1]
+#con = confusion_matrix(y_predicted, y_actual )
+#print(con)
+
