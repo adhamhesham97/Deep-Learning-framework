@@ -71,7 +71,8 @@ def ReadFile(path):
     # Normalization
     Features_Train=Features_Train/255
     Features_Test=Features_Test/255
-
+    
+    print('data loaded')
     
     
     return Label_Train,Features_Train,Label_Test,Features_Test

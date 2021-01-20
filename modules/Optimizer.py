@@ -24,17 +24,16 @@ class optimizer:
             if(grads is not None):
                 
                 w,b=layer.getParams()
-                dw,db=layer.getGrads()
-                v=self.get_v()
-             
-                v["dW"+str(i+1)]=self.beta*v.get("dW"+str(i+1),0)+(1-self.beta)*dw
-                v["db"+str(i+1)]=self.beta*v.get("db"+str(i+1),0)+(1-self.beta)*db
+                dw,db=grads
+                
+                self.v["dW"+str(i+1)]=self.beta*self.v.get("dW"+str(i+1),0)+(1-self.beta)*dw
+                self.v["db"+str(i+1)]=self.beta*self.v.get("db"+str(i+1),0)+(1-self.beta)*db
                 
                 #updating the layer parameters 
-                w=w-self.lr*v["dW"+str(i+1)]
-                b=b-self.lr*v["db"+str(i+1)]
+                w=w-self.lr*self.v["dW"+str(i+1)]
+                b=b-self.lr*self.v["db"+str(i+1)]
                 i=i+1
                 
                 #storing the new parameters in layer
                 layer.setParams(w,b)
-                self.set_v(v)
+                

@@ -10,12 +10,12 @@ Label_Train, Features_Train, Label_Test, Features_Test = DL.ReadFile("H:\\4th co
 # Features_Train = Features_Train.T.reshape(-1,28,28,1).transpose(0,3,1,2)/255
 # Features_Test = Features_Test.T.reshape(-1,28,28,1).transpose(0,3,1,2)/255
 
-Features_Train_small = Features_Train[0:60000] #choose the first 1000 examples only
-Features_Test_small = Features_Test[0:10000] #choose the first 100 examples only
+Features_Train_small = Features_Train[0:10000] #choose the first 1000 examples only
+Features_Test_small = Features_Test[0:1000] #choose the first 100 examples only
 #%% training
 
 batch_size = 128
-num_epochs = 3
+num_epochs = 5
 num_classes = 10
 hidden_units = 100
 
@@ -39,7 +39,7 @@ model.add('maxpool', (2, 2), 2)
 model.add('flatten')
 model.add('Relu', hidden_units)
 model.add('Linear', num_classes)
-optim = DL.optimizer(0.5,0.9)
+optim = DL.optimizer(0.05,0.9)
 loss_fn = DL.loss_Function('SoftmaxCrossEntropy')
 loss_fn.setLambda(0)
 
@@ -50,12 +50,12 @@ model.fit(Features_Train_small, Label_Train_hotone,
 #%% testing
 
 # test on the same trained data set
-predicted_labels = np.argmax(model.predict(Features_Train_small), axis=0)
+predicted_labels = np.argmax(model.predict(Features_Train_small[0:1000]), axis=0)
 accuracy = DL.accuracy(predicted_labels, Label_Train)
 print("Accuracy of training dataset = {:.2f}%".format(accuracy*100))
 
 # test on the test data set
-predicted_labels = np.argmax(model.predict(Features_Test), axis=0)
+predicted_labels = np.argmax(model.predict(Features_Test_small), axis=0)
 accuracy = DL.accuracy(predicted_labels, Label_Test)
 print("Model Accuracy = {:.2f}%".format(accuracy*100))
 
