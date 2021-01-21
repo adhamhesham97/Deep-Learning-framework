@@ -40,7 +40,7 @@ class pool_layer():
             out = self.X_col[self.max_indexes,range(self.max_indexes.size)]
     
             out = out.reshape(self.n_H,self.n_W,self.n_X,self.n_C).transpose(2,3,0,1)
-            return out
+            return out, 0
         
         elif self.mode == "average":
             # number of examples
@@ -54,9 +54,9 @@ class pool_layer():
             pool = np.array(np.hsplit(pool, m))
             pool = pool.reshape(m, self.n_C, self.n_H, self.n_W)
             self.X_shape=X.shape
-            return pool
+            return pool, 0
     
-    def backward(self, dA):
+    def backward(self, dA, Lambda=0):
         
         
         if self.mode == "max":
@@ -76,7 +76,7 @@ class pool_layer():
             m, n_C_prev, n_H_prev, n_W_prev = self.X_shape
             dA_flatten = dA.reshape(self.n_C, -1) / (self.FH * self.FW)
             dX_col = np.repeat(dA_flatten, self.FH*self.FW, axis=0)
-            dX = col2im(dX_col, X.shape, self.FH, self.FW, self.S, 0) 
+            dX = col2im(dX_col, self.X_shape, self.FH, self.FW, self.S, 0) 
             # Reshape dX properly.
             dX = dX.reshape(m, -1)
             dX = np.array(np.hsplit(dX, n_C_prev))

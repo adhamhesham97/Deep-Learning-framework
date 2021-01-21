@@ -52,9 +52,9 @@ class conv_layer():
         #Cache inputs for back propagation
         self.cache = X.shape, X_col, filter_col
         
-        return out
+        return out, 0
 
-    def backward(self, dA):
+    def backward(self, dA, Lambda=0):
         # dA dimensions are (n,c,h,w)
         # number of examples
         m, _,_,_ = dA.shape
@@ -85,6 +85,7 @@ class conv_layer():
         
         # Reshape back to image (col2im).
         dX = col2im(dX_col, X_shape, FH, FW, self.S, self.P)
+        # dX = col2im_indices(dX_col, X_shape, FH, FW, self.P, self.S)
         
         # Reshape dfilter_col into dw.
         self.dfilters = dfilter_col.reshape((dfilter_col.shape[0], n_C_prev, FH, FW))
@@ -186,13 +187,10 @@ def col2im(dX_col, X_shape, HF, WF, stride, pad):
     if pad == 0:
         return X_padded
     elif type(pad) is int:
-        return X_padded[:, :,pad:-pad, pad:-pad]
-    
-    
-
-
+        return X_padded[:,:,pad:-pad, pad:-pad]
 
 # forward and backward propagation
+
 '''
 activation_type="Linear"
 Filter = 2
@@ -208,18 +206,30 @@ filters = np.random.randn(2,2,3,8).transpose(3,2,0,1)
 b = np.random.randn(8)
 conv.setParams(filters, b)
 
-A = conv.forward(X)
+A,_ = conv.forward(X)
 print("A's mean =", np.mean(A.transpose(0,2,3,1)))
 print("A[3,2,1] =", A.transpose(0,2,3,1)[3,2,1])
 
 dX = conv.backward(A).transpose(0,2,3,1)
 dfilters, db = conv.getGrads()
-dfilters = dfilters.transpose(3,2,0,1)
+dfilters = dfilters.transpose(2,3,1,0)
 db = db
 print("dX_mean =", np.mean(dX))
 print("dfilters_mean =", np.mean(dfilters))
 print("db_mean =", np.mean(db))
 '''
+
+# # Pytorch
+# W, b = conv.getParams()
+# import torch 
+# import torch.nn as nn
+# inputs_pt = torch.Tensor(X).double()
+# conv_pt = nn.Conv2d(3, 2, 2, stride=2, padding=2, bias=True)
+# conv_pt.weight = nn.Parameter(torch.DoubleTensor(W))
+# conv_pt.bias = nn.Parameter(torch.DoubleTensor(b))
+# out_pt = conv_pt(inputs_pt) # Forward.
+# out_pt.backward(torch.Tensor(A)) # Backward.
+
 
 # storing and loading
 

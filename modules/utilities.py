@@ -18,18 +18,18 @@ def hot_one(labels, num_classes):
 def store(Model, filename):
     if not filename.endswith(".dat"): 
         filename+=".dat"        
-    with open(filename, "wb") as f:
+    with open('models\\'+filename, "wb") as f:
         pickle.dump(Model.getParams(), f)
 
 def load(filename):
     Model = model()
     try:
-        with open(filename,"rb") as f:
+        with open('models\\'+filename,"rb") as f:
             layers = pickle.load(f)
             Model.setParams(layers)
     except:
         try:
-            with open(filename+".dat","rb") as f:
+            with open('models\\'+filename+".dat","rb") as f:
                 layers = pickle.load(f)
                 Model.setParams(layers)
         except:

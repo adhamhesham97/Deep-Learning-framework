@@ -6,20 +6,23 @@ import DL
 # change the directory
 Label_Train, Features_Train, Label_Test, Features_Test = DL.ReadFile("H:\\4th comp\\NN\\cifar-10-batches-py")
 
+# features dimensions (m, c, h, w)
+
 #%% training
 
 batch_size = 128
 num_epochs = 20
 num_classes = 10
 hidden_units = 100
-num_of_features = Features_Train.shape[0]
-num_of_examples = Features_Train.shape[1]
+
+input_dimensions = (32, 32, 3)
 
 # change each label from scaler value to vector( 2 ---> [0, 0, 1, 0, 0, ...] ) (hot one)
 Label_Train_hotone = DL.hot_one(Label_Train, num_classes)
 
 model = DL.model()
-model.input_dims(num_of_features)
+model.input_dims(input_dimensions)
+model.add('flatten')
 model.add('Relu', hidden_units)
 model.add('Relu', hidden_units)
 model.add('Linear', num_classes)

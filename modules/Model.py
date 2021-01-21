@@ -40,7 +40,11 @@ class model:
             l=conv_layer(Filter_size, num_of_filters, Stride, padding, activation_type, input_dimensions)
         
         elif(layer_type=='flatten'):
-            input_dimensions = self.layers[-1].output_dims() # output dims of previous layer
+            if(self.layers == []):
+                input_dimensions = self.input_dimensions # output dims of previous layer
+            else:
+                input_dimensions=self.layers[-1].output_dims() # output dims of previous layer
+            
             l=flatten(input_dimensions)
         
         # elif(layer_type=='batch_norm'):
@@ -90,6 +94,7 @@ class model:
     
     def fit(self, X, label, batch_size,num_epochs,optimizer,loss_fn):
         loss_history = []
+        batches_loss_history = []
         plt.ion()
         mini_batches, num_of_batches = self.create_mini_batches(X, label, batch_size)
         Lambda=loss_fn.getLambda()
@@ -106,42 +111,50 @@ class model:
                 weights_sum=0
                 
                 for Layer in self.layers: 
-                    output = Layer.forward(A)
-                    if(type(output) == tuple): 
-                        A, w_squared = output
-                        weights_sum += w_squared 
-                    else: 
-                        A = output
-
+                    A, w_squared = Layer.forward(A)
+                    weights_sum += w_squared 
+                
                 batch_loss = loss_fn.forward(A,label,weights_sum)
                 epoch_loss += batch_loss
+                batches_loss_history+= [batch_loss]
                 grad = loss_fn.backward()
                 
                 for Layer in self.layers[::-1]:
-                    try:
-                        grad = Layer.backward(grad,Lambda) 
-                    except:
-                        grad = Layer.backward(grad)
+                    grad = Layer.backward(grad,Lambda) 
+                    
                 optimizer.step(self.layers)
                 done = int(100*current_batch/num_of_batches)
                 ETA = int((time.time() - start_time) * (num_of_batches-current_batch))
-                print('\repoch:{}/{} [{}{}] {}% ETA:{}'.format(epoch+1, num_epochs,'█' * int(done/2), '.' * int(50-done/2), done, format_time(ETA)), end='\r')
+                print('\repoch:{}/{} [{}{}] {}% ETA:{}'.format(epoch+1, num_epochs,'█' * int(done/2), '.' * int(50-int(done/2)), done, format_time(ETA)), end='\r')
                 
             
             loss_history+=[epoch_loss/num_of_batches]
             print("\nLoss of epoch {} = {:.3f}".format(epoch+1,loss_history[-1]))
-            visualization(loss_history)
+            visualization(loss_history, batches_loss_history)
             plt.show(block=True)
+        # visualization(batches_loss_history)
         return loss_history 
         
-    def predict(self,X):
-        for Layer in self.layers: 
-            output = Layer.forward(X)
-            if(type(output) == tuple): 
-                X, _ = output
-            else: 
-                X = output
-        return X 
+    def predict(self, X):
+        L=[]
+        batch_size=32
+        mini_batches=[]
+        num_of_batches = X.shape[0] // batch_size 
+        for i in range(num_of_batches + 1): 
+            X_mini = X[i * batch_size:(i + 1)*batch_size] 
+            mini_batches.append(X_mini) 
+        if(X.shape[0] % batch_size == 0 ):
+            mini_batches.pop()
+            
+        for batch in range(num_of_batches):
+            
+            X = mini_batches[batch]
+            for Layer in self.layers: 
+                X, _ = Layer.forward(X)
+            L.append(X)
+            
+        arr = np.hstack(L)
+        return arr
     
     def getParams(self):
         List=[]
