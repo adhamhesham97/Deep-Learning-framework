@@ -6,7 +6,7 @@ def sample_visualization(M_C,y_test,x_test,test_pred_class):
         wrong_index=[[None for i in range(5)] for j in range(10)]
         
         m,c,h,w = x_test.shape
-        img=x_test
+        im=x_test
         x_test = x_test.reshape(m,-1).T
         
         for i in range(10) :
@@ -43,7 +43,7 @@ def sample_visualization(M_C,y_test,x_test,test_pred_class):
                     break
                 else:
                     wrong_index[i][k]=wrong[k]
-                    print(*wrong_index)
+                    # print(*wrong_index)
             #print(*correct_index)
             #print("\n")
             #print(*wrong_index)
@@ -64,8 +64,7 @@ def sample_visualization(M_C,y_test,x_test,test_pred_class):
                        # G = img[1024:2048].reshape(32, 32)
                        # B = img[2048:].reshape(32, 32)
                        # img = np.dstack((R, G, B))
-                       print(img.shape)
-                       axes[j, i].imshow(img[indx1].transpose(1,2,0), interpolation='bicubic')
+                       axes[j, i].imshow(im[indx1].transpose(1,2,0), interpolation='bicubic')
             for k in range(5):
                 if wrong_index[i][k]!= -1:
                    indx2= wrong_index[i][k]

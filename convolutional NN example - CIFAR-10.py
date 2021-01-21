@@ -33,12 +33,17 @@ Filter_size, Stride
 '''
 model = DL.model()
 model.input_dims(input_dimensions)
-model.add('conv', (3, 3), 32, 1, 1, "Relu")
+# LeNet-5
+model.add('conv', (5, 5), 6, 1, 0, "Relu")
+model.add('maxpool', (2, 2), 2)
+model.add('conv', (5, 5), 16, 1, 0, "Relu")
 model.add('maxpool', (2, 2), 2)
 model.add('flatten')
-model.add('Relu', hidden_units)
+model.add('Relu', 120)
+model.add('Relu', 84)
 model.add('Linear', num_classes)
-optim = DL.optimizer(0.001, 0.99)
+
+optim = DL.optimizer(0.1, 0.99)
 loss_fn = DL.loss_Function('SoftmaxCrossEntropy')
 loss_fn.setLambda(0)
 model.fit(Features_Train_small, Label_Train_hotone,
@@ -48,7 +53,7 @@ model.fit(Features_Train_small, Label_Train_hotone,
 #%% testing
 
 # test on the same trained data set
-predicted_labels = np.argmax(model.predict(Features_Train_small), axis=0)
+predicted_labels = np.argmax(model.predict(Features_Train_small[0:5000]), axis=0)
 accuracy = DL.accuracy(predicted_labels, Label_Train)
 print("Accuracy of training dataset = {:.2f}%".format(accuracy*100))
 
