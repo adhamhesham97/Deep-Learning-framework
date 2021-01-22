@@ -149,9 +149,9 @@ class model:
         if(X.shape[0] % batch_size == 0 ):
             mini_batches.pop()
             
-        for batch in range(num_of_batches):
+        for batch in mini_batches:
             
-            X = mini_batches[batch]
+            X = batch
             for Layer in self.layers: 
                 X, _ = Layer.forward(X)
             L.append(X)
