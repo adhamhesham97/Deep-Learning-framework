@@ -5,10 +5,21 @@ def sample_visualization(M_C,y_test,x_test,test_pred_class):
         correct_index = [[None for i in range(5)] for j in range(10)]
         wrong_index=[[None for i in range(5)] for j in range(10)]
         
-        m,c,h,w = x_test.shape
-        im=x_test
-        x_test = x_test.reshape(m,-1).T
+        #x_test dimensions are (m,c,h,w)
         
+        '''
+        #change dimensions to (m,h,w,c) (easier to plot)
+        
+        x_test = x_test.transpose(0,2,3,1)
+        '''
+        
+        
+        '''
+        #to change from (m,c,h,w) to (number of features,m)
+        
+        x_test = x_test.reshape(m,-1).T
+        '''
+
         for i in range(10) :
             label=np.where(y_test == i )[0]
             pred=np.where(test_pred_class ==i)[0]
@@ -37,13 +48,13 @@ def sample_visualization(M_C,y_test,x_test,test_pred_class):
                     break
                 else:
                     correct_index[i][j]=correct[j]
-                    # print(*correct_index)
+                    #print(*correct_index)
             for k in range(len(wrong)):
                 if k==5:
                     break
                 else:
                     wrong_index[i][k]=wrong[k]
-                    # print(*wrong_index)
+                    #print(*wrong_index)
             #print(*correct_index)
             #print("\n")
             #print(*wrong_index)
@@ -59,12 +70,12 @@ def sample_visualization(M_C,y_test,x_test,test_pred_class):
                        axes[j, i].imshow(x_test[:, indx1].reshape((28,28)),cmap='gray')
                    else: #CIFAR-10 dataset
                        #axes[j, i].imshow(x_test[:, indx1].reshape((32,32,3)))  #used instead of following lines when using tensorflow
-                       # img = x_test[:, indx1]
-                       # R = img[0:1024].reshape(32, 32)
-                       # G = img[1024:2048].reshape(32, 32)
-                       # B = img[2048:].reshape(32, 32)
-                       # img = np.dstack((R, G, B))
-                       axes[j, i].imshow(im[indx1].transpose(1,2,0), interpolation='bicubic')
+                       img = x_test[:, indx1]
+                       R = img[0:1024].reshape(32, 32)
+                       G = img[1024:2048].reshape(32, 32)
+                       B = img[2048:].reshape(32, 32)
+                       img = np.dstack((R, G, B))
+                       axes[j, i].imshow(img, interpolation='bicubic')
             for k in range(5):
                 if wrong_index[i][k]!= -1:
                    indx2= wrong_index[i][k]
@@ -95,13 +106,11 @@ def sample_visualization(M_C,y_test,x_test,test_pred_class):
         from tensorflow.keras import layers
         from tensorflow.keras.datasets import mnist
         import os
-
         os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
         (x_train, y_train), (x_test, y_test) = mnist.load_data()
         x_train = x_train.reshape(-1, 28 * 28).astype("float32") / 255
         x_test = x_test.reshape(-1, 28 * 28).astype("float32") / 255
         X_test = x_test.T
-
         # Sequential API (Very convenient, not very flexible)
         model = keras.Sequential(
             [
@@ -112,19 +121,16 @@ def sample_visualization(M_C,y_test,x_test,test_pred_class):
             ])
         model.compile(loss='mean_squared_error', optimizer=tf.keras.optimizers.Adam(lr=0.001))
         model.fit(x_train, y_train, epochs=20)
-
         test_pred_class = np.argmax(model.predict(x_test), axis=1)
     else:  # CIFAR-10 dataset:
         import tensorflow as tf
         from tensorflow import keras
         from tensorflow.keras import layers
         from tensorflow.keras.datasets import mnist
-
         (x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
         x_train = x_train.reshape(-1, 32 * 32 * 3).astype('float32') / 256
         x_test = x_test.reshape(-1, 32 * 32 * 3).astype('float32') / 256
         X_test = x_test.T
-
         # Sequential API (Very convenient, not very flexible)
         model = keras.Sequential(
             [
@@ -134,13 +140,9 @@ def sample_visualization(M_C,y_test,x_test,test_pred_class):
                 layers.Dense(10),
             ]
         )
-
         model.compile(loss='mean_squared_error', optimizer=tf.keras.optimizers.Adam(lr=0.001))
         model.fit(x_train, y_train, epochs=20)
         test_pred_class = np.argmax(model.predict(x_test), axis=1)
-
-
-
     return y_test, X_test, test_pred_class
     #print(*test_pred_class)'''
 
