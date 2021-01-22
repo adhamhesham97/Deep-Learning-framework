@@ -89,7 +89,7 @@ def sample_visualization(M_C, y_test, x_test, test_pred_class):
 import DL
 def test(M_C):
     if M_C==True:
-        Label_Train, Features_Train, Label_Test, Features_Test = DL.ReadFile("F:\\eural\\project2\\Deep-Learning-framework-main\\MNISTcsv")
+        Label_Train, Features_Train, Label_Test, Features_Test = DL.ReadFile("F:\\project2\\Deep-Learning-framework-main\\MNISTcsv") #change directory
         # %% training
         batch_size = 64
         num_epochs = 1
