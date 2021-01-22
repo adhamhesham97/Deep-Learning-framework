@@ -5,6 +5,7 @@ from .Conv_layer import conv_layer
 from .Pool_layer import pool_layer
 from .Visualization import visualization
 from .Flatten import flatten
+from .Dropout import dropout
 import time
 
 class model:
@@ -47,8 +48,11 @@ class model:
             
             l=flatten(input_dimensions)
         
-        # elif(layer_type=='batch_norm'):
-        #     l=batch_norm(...)
+        elif(layer_type=='dropout'):
+            probability = argv[1]
+            in_nodes = self.layers[-1].output_dims()
+            l=dropout(probability, in_nodes)
+
         
         else:
             out_nodes = argv[1]
@@ -59,8 +63,7 @@ class model:
             l=layer(in_nodes, out_nodes, layer_type)
         
         self.layers.append(l)
-        self
-        
+
     def Initialize_Parameters(self):        
         for Layer in self.layers:
             w,b=Layer.getParams()
