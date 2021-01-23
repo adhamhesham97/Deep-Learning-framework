@@ -19,6 +19,7 @@ def sample_visualization(M_C,y_test,x_test,test_pred_class):
         
         x_test = x_test.reshape(m,-1).T
         '''
+        x_test = x_test.reshape(x_test.shape[0],-1).T
 
         for i in range(10) :
             label=np.where(y_test == i )[0]
