@@ -26,7 +26,7 @@ model.add('flatten')
 model.add('Relu', hidden_units)
 model.add('Relu', hidden_units)
 model.add('Linear', num_classes)
-optim = DL.optimizer(0.001)
+optim = DL.optimizer('gd',0.001)
 loss_fn = DL.loss_Function('SoftmaxCrossEntropy')
 loss_fn.setLambda(0)
 model.fit(Features_Train, Label_Train_hotone,

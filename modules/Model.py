@@ -1,11 +1,11 @@
 import numpy as np
-import matplotlib.pyplot as plt
 from .Layer import layer
 from .Conv_layer import conv_layer
 from .Pool_layer import pool_layer
 from .Visualization import visualization
 from .Flatten import flatten
 from .Dropout import dropout
+
 import time
 
 class model:
@@ -98,9 +98,9 @@ class model:
     def fit(self, X, label, batch_size,num_epochs,optimizer,loss_fn):
         loss_history = []
         batches_loss_history = []
-        plt.ion()
         mini_batches, num_of_batches = self.create_mini_batches(X, label, batch_size)
         Lambda=loss_fn.getLambda()
+        # T = time.time()
         for epoch in range (num_epochs):
             
             current_batch=0
@@ -129,13 +129,13 @@ class model:
                 done = int(100*current_batch/num_of_batches)
                 ETA = int((time.time() - start_time) * (num_of_batches-current_batch))
                 print('\repoch:{}/{} [{}{}] {}% ETA:{}'.format(epoch+1, num_epochs,'█' * int(done/2), '.' * int(50-int(done/2)), done, format_time(ETA)), end='\r')
-                
+                # if(time.time()-T > 5):
+                #     T=time.time()
+                #     visualization(loss_history, batches_loss_history)
             
             loss_history+=[epoch_loss/num_of_batches]
             print("\nLoss of epoch {} = {:.3f}".format(epoch+1,loss_history[-1]))
             visualization(loss_history, batches_loss_history)
-            plt.show(block=True)
-        # visualization(batches_loss_history)
         return loss_history 
         
     def predict(self, X):

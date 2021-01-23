@@ -23,13 +23,15 @@ def store(Model, filename):
 
 def load(filename):
     Model = model()
+    if not filename.endswith(".dat"): 
+        filename+=".dat"        
     try:
         with open('models\\'+filename,"rb") as f:
             layers = pickle.load(f)
             Model.setParams(layers)
     except:
         try:
-            with open('models\\'+filename+".dat","rb") as f:
+            with open(filename,"rb") as f:
                 layers = pickle.load(f)
                 Model.setParams(layers)
         except:

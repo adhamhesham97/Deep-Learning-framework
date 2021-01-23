@@ -8,8 +8,8 @@ Label_Train, Features_Train, Label_Test, Features_Test = DL.ReadFile("H:\\4th co
 
 # features dimensions (m, c, h, w)
 
-#%% training
 
+#%% training
 batch_size = 64
 num_epochs = 10
 num_classes = 10
@@ -25,7 +25,8 @@ model.input_dims(input_dimensions)
 model.add('flatten')
 model.add('Relu', hidden_units)
 model.add('Linear', num_classes)
-optim = DL.optimizer(0.5,0.5)
+optim = DL.optimizer('gd',0.5,0.5)
+# optim = DL.optimizer('adam',0.001)
 loss_fn = DL.loss_Function('SoftmaxCrossEntropy')
 loss_fn.setLambda(0)
 

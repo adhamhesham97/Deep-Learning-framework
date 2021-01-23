@@ -43,7 +43,8 @@ model.add('Relu', 120)
 model.add('Relu', 84)
 model.add('Linear', num_classes)
 
-optim = DL.optimizer(0.1, 0.99)
+# optim = DL.optimizer('gd',0.1, 0.99)
+optim = DL.optimizer('adam',0.001)
 loss_fn = DL.loss_Function('SoftmaxCrossEntropy')
 loss_fn.setLambda(0)
 model.fit(Features_Train_small, Label_Train_hotone,

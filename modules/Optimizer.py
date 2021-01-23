@@ -7,7 +7,7 @@ class optimizer:
         self.lr=learningRate
         self.beta1=beta1
         self.beta2=beta2
-        self.t=0
+        self.t=1
         self.v={}
         self.s={}
         self.v_corrected={}
@@ -24,10 +24,11 @@ class optimizer:
         
         for layer in layers:
             grads = layer.getGrads()
-            params=layer.getParams()
             
             if(grads is not None):
-                
+            
+                params=layer.getParams()
+            
                 w,b=params
                 dw,db=grads
                 
@@ -35,12 +36,14 @@ class optimizer:
                 if(self.OPTIMIZER== "gd"):
                     
                     v=self.v
-                    v["dW"+str(i+1)]=self.beta1*v.get("dW"+str(i+1),0)+(1-self.beta1)*dw
-                    v["db"+str(i+1)]=self.beta1*v.get("db"+str(i+1),0)+(1-self.beta1)*db
+                    v["dW"+str(i+1)]=self.beta1 * v.get("dW"+str(i+1),0)+(1-self.beta1)*dw
+                    v["db"+str(i+1)]=self.beta1 * v.get("db"+str(i+1),0)+(1-self.beta1)*db
+                    
+                    w=w-self.lr * v["dW"+str(i+1)]
+                    b=b-self.lr * v["db"+str(i+1)]
                     
                     self.v=v
-                    w=w-self.lr*v["dW"+str(i+1)]
-                    b=b-self.lr*v["db"+str(i+1)]
+                    
                 
                 
                 #ADAM OPTIMIZER
