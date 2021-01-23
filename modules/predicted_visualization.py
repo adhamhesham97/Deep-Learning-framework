@@ -33,13 +33,13 @@ def sample_visualization(M_C, y_test, x_test, test_pred_class):
                     break
                 else:
                     correct_index[i][j] = correct[j]
-                    print(*correct_index)
+                    # print(*correct_index)
             for k in range(len(wrong)):
                 if k == 5:
                     break
                 else:
                     wrong_index[i][k] = wrong[k]
-                    print(*wrong_index)
+                    # print(*wrong_index)
 
         fig, axes = plt.subplots(10, 10, figsize=(10, 10))
         fig.subplots_adjust(hspace=0.1, wspace=0.1)

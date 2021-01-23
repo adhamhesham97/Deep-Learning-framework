@@ -8,4 +8,4 @@ from modules.utilities import *
 from modules.Conv_layer import conv_layer
 from modules.Pool_layer import pool_layer
 from modules.PCA import PCA
-from modules.predicted_samples_visualization import *
+from modules.predicted_visualization import *
