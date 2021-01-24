@@ -139,26 +139,33 @@ class model:
         return loss_history 
         
     def predict(self, X):
-        L=[]
-        batch_size=32
-        mini_batches=[]
-        num_of_batches = X.shape[0] // batch_size 
-        for i in range(num_of_batches + 1): 
-            X_mini = X[i * batch_size:(i + 1)*batch_size] 
-            mini_batches.append(X_mini) 
-        if(X.shape[0] % batch_size == 0 ):
-            mini_batches.pop()
-            
-        for batch in mini_batches:
-            
-            X = batch
+        
+        if(len(X.shape) == 2): # fully connected
             for Layer in self.layers: 
                 X, _ = Layer.forward(X)
-            L.append(X)
+            return X
+                    
+        elif(len(X.shape) == 4): # convulution
+            L=[]
+            batch_size=32
+            mini_batches=[]
+            num_of_batches = X.shape[0] // batch_size 
+            for i in range(num_of_batches + 1): 
+                X_mini = X[i * batch_size:(i + 1)*batch_size] 
+                mini_batches.append(X_mini) 
+            if(X.shape[0] % batch_size == 0 ):
+                mini_batches.pop()
+                
+            for batch in mini_batches:
+                
+                X = batch
+                for Layer in self.layers: 
+                    X, _ = Layer.forward(X)
+                L.append(X)
+                
+            arr = np.hstack(L)
+            return arr 
             
-        arr = np.hstack(L)
-        return arr
-    
     def getParams(self):
         List=[]
         for Layer in self.layers:
