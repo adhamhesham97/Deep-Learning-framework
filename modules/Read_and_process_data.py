@@ -1,8 +1,43 @@
 import numpy as np
 import os
 import pickle
+from pathlib import Path
+import requests
+import tarfile 
+
+def download(url, filename):
+    with open(filename, 'wb') as f:
+        response = requests.get(url, stream=True)
+        total = response.headers.get('content-length')
+ 
+        if total is None:
+            f.write(response.content)
+        else:
+            downloaded = 0
+            total = int(total)
+            for data in response.iter_content(chunk_size=max(int(total/1000), 1024*1024)):
+                downloaded += len(data)
+                f.write(data)
+                done = int(50*downloaded/total)
+                print('\r[{}{}]'.format('█' * done, '.' * (50-done)), end='\r')
+            print('\ndone')
 
 
+
+def download_and_read(dataset_name):
+  if(dataset_name=='MNIST'):
+    Path("./MNIST").mkdir(parents=True, exist_ok=True)
+    download('https://pjreddie.com/media/files/mnist_train.csv', './MNIST/train.csv')
+    download('https://pjreddie.com/media/files/mnist_test.csv', './MNIST/test.csv')
+    return ReadFile("./MNIST")
+  elif(dataset_name=='CIFAR'):
+    Path("./CIFAR").mkdir(parents=True, exist_ok=True)
+    download('https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz', './CIFAR/cifar10.tar.gz')
+    path=os.path.abspath('./CIFAR/cifar10.tar.gz')
+    file = tarfile.open(path)  
+    file.extractall(path[:-15]) 
+    file.close() 
+    return ReadFile("./CIFAR/cifar-10-batches-py")
 
 
 def ReadFile(path):
@@ -76,46 +111,3 @@ def ReadFile(path):
     
     
     return Label_Train,Features_Train,Label_Test,Features_Test
-
-
-
-
-
-
-
-# path=input("Write Directory Path:" )                #Path of dataset
-# Label_Train,Features_Train,Label_Test,Features_Test=ReadFile(path)
-# print(Label_Test)
-# print(Features_Test)
-# print(Label_Train)
-# print(Features_Train)
-
-
-
-
-
-
-# visualize mnist
-'''
-Label_Train,Features_Train,Label_Test,Features_Test=ReadFile("H:\\4th comp\\NN\\MNISTcsv")
-import matplotlib.pyplot as plt
-i=20 # image number
-pixels = Features_Test[:,i].reshape((28, 28))
-plt.title('Label is {}'.format(Label_Test[i]))
-plt.imshow(pixels, cmap='gray')
-'''
-
-# visualize cifar-10
-'''
-import matplotlib.pyplot as plt
-Label_Train,Features_Train,Label_Test,Features_Test=ReadFile("H:\\4th comp\\NN\\cifar-10-batches-py")
-i=9 # image number
-im=Features_Test[:,i]
-im_r = im[0:1024].reshape(32, 32)
-im_g = im[1024:2048].reshape(32, 32)
-im_b = im[2048:].reshape(32, 32)
-img = np.dstack((im_r, im_g, im_b))
-plt.title('Label is {}'.format(Label_Test[i]))
-plt.imshow(img) 
-plt.show()
-'''
