@@ -1,19 +1,19 @@
-# meshtensorflow
+# mshtensorflow
 A free and simple deep learning framework for everyone.
 
 ### Install
 ```sh
-$ pip install meshtensorflow
+$ pip install mshtensorflow
 ```
 ### Update
 ```sh
-$ pip install meshtensorflow --upgrade
+$ pip install mshtensorflow --upgrade
 ```
 
 
 ### Usage
 ```sh
-$ import meshtensorflow 
+$ import mshtensorflow 
 ```
 License
 ----
