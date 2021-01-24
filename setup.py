@@ -8,7 +8,7 @@ def readme():
 
 setup(
     name="meshtensorflow",
-    version="0.0.2",
+    version="0.0.3",
     description="A free and simple deep learning framework for everyone",
     long_description=readme(),
     long_description_content_type="text/markdown",
