@@ -15,7 +15,4 @@ $ pip install mshtensorflow --upgrade
 ```sh
 $ import mshtensorflow 
 ```
-License
-----
 
-MIT
