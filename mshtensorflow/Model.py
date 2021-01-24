@@ -136,7 +136,7 @@ class model:
             loss_history+=[epoch_loss/num_of_batches]
             print("\nLoss of epoch {} = {:.3f}".format(epoch+1,loss_history[-1]))
             visualization(loss_history, batches_loss_history)
-        return loss_history 
+        # return loss_history 
         
     def predict(self, X):
         

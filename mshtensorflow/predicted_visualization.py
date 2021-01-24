@@ -49,7 +49,7 @@ def sample_visualization(M_C, y_test, x_test, test_pred_class):
                 if correct_index[i][j] != None:
                     indx1 = correct_index[i][j]
                     if M_C == True:  # MNIST dataset
-                        axes[j, i].imshow((x_test[indx1].reshape(28,28,1)), cmap='gray')
+                        axes[j, i].imshow((x_test[indx1].reshape(28,28)), cmap='gray')
                     else:  # CIFAR-10 dataset
                         #axes[j, i].imshow(x_test[indx1].reshape(32,32,3))  # used instead of following lines when using tensorflow
                         img = x_test[indx1].reshape(32, 32, 3)
@@ -63,7 +63,7 @@ def sample_visualization(M_C, y_test, x_test, test_pred_class):
                 if wrong_index[i][k] != None:
                     indx2 = wrong_index[i][k]
                     if M_C == True:  # MNIST dataset
-                        axes[k + 5, i].imshow((x_test[indx2].reshape(28,28,1)), cmap='gray')
+                        axes[k + 5, i].imshow((x_test[indx2].reshape(28,28)), cmap='gray')
                     else:  # CIFAR-10 dataset
                         #axes[k + 5, i].imshow(x_test[indx2].reshape(32,32,3))  # used instead of following lines when using tensorflow
                         img = x_test[indx2].reshape(32,32,3)
