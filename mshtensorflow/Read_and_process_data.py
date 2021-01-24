@@ -19,7 +19,7 @@ def download(url, filename):
                 downloaded += len(data)
                 f.write(data)
                 done = int(50*downloaded/total)
-                print('\r[{}{}]'.format('█' * done, '.' * (50-done)), end='\r')
+                print('\r[{}{}]'.format('█' * done, '.' * (50-done)), end='')
             print('\ndone')
 
 
