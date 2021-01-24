@@ -2,6 +2,7 @@ import numpy as np
 
 #X is matrix of m*d where m is no. of samples and d is no. of features
 #n is an integer >= 1 indiacting no. of components or n is a decimal between 0 and 1 indicating variance
+#returns reduced_x matrix of k*m where k is no. of reduced features and m no of samples
 
 class PCA:
     def __init__(self, n):
@@ -18,9 +19,10 @@ class PCA:
     def fit(self, X):
         # Mean centering
         self.mean = np.mean(X, axis=0)
-        self.std = np.std(X, axis=0)
+        self.std = np.std(X, axis=0)+0.00001 #adding af small value to prevent dividing by zero
 
         X = (X - self.mean)/self.std
+
         # covariance, function needs samples as columns
         cov = np.cov(X.T)
         # eigenvalues, eigenvectors
@@ -48,7 +50,8 @@ class PCA:
     def transform(self, X):
         # project data
         #X = (X - self.mean)/self.std
-        return np.dot(X, self.components.T)
+        reduced_x=(np.dot(X, self.components.T)).T
+        return reduced_x
 
 
 #testing using iris dataset
@@ -66,8 +69,9 @@ target = data.iloc[:, 4]
 pca=PCA(2)  #using no. components
 #pca=PCA(0.98)  #using variance
 pca.fit(x)
-mat_reduced = pca.transform(x)
-
+print(x.shape)
+mat_reduced = (pca.transform(x)).T
+print(mat_reduced.shape)
 # Creating a Pandas DataFrame of reduced Dataset
 principal_df = pd.DataFrame(mat_reduced, columns=['PC1', 'PC2'])
 # Concat it with target variable to create a complete Dataset
