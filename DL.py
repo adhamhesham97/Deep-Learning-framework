@@ -5,7 +5,7 @@ from mshtensorflow.metrics import *
 from mshtensorflow.Visualization import *
 from mshtensorflow.Read_and_process_data import *
 from mshtensorflow.utilities import *
-from mshtensorflow.Conv_layer import conv_layer
-from mshtensorflow.Pool_layer import pool_layer
+from mshtensorflow.conv_layer import conv_layer
+from mshtensorflow.pool_layer import pool_layer
 from mshtensorflow.PCA import PCA
 from mshtensorflow.predicted_visualization import *

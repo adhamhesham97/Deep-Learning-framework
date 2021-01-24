@@ -105,7 +105,7 @@ class model:
             
             current_batch=0
             epoch_loss = 0
-            print('\repoch:{}/{} [{}] {}%'.format(epoch, num_epochs, '.' * (50), 0), end='\r')
+            print('\repoch:{}/{} [{}] {}%'.format(epoch, num_epochs, '.' * (50), 0), end='')
                 
             for X, label in mini_batches:
                 start_time = time.time()
@@ -128,7 +128,7 @@ class model:
                 optimizer.step(self.layers)
                 done = int(100*current_batch/num_of_batches)
                 ETA = int((time.time() - start_time) * (num_of_batches-current_batch))
-                print('\repoch:{}/{} [{}{}] {}% ETA:{}'.format(epoch+1, num_epochs,'█' * int(done/2), '.' * int(50-int(done/2)), done, format_time(ETA)), end='\r')
+                print('\repoch:{}/{} [{}{}] {}% ETA:{}'.format(epoch+1, num_epochs,'█' * int(done/2), '.' * int(50-int(done/2)), done, format_time(ETA)), end='')
                 # if(time.time()-T > 5):
                 #     T=time.time()
                 #     visualization(loss_history, batches_loss_history)
