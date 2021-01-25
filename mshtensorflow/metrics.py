@@ -102,18 +102,17 @@ def confusion_matrix(predicted, actual):
 #con = confusion_matrix(y_predicted, y_actual )
 #print(con)
 
-def multiclass_confusion_matrix(y_hat, y_label):
+def multiclass_confusion_matrix(predicted, actual):
 
-    classes = np.unique(y_label) 
+    classes = np.unique(actual)
     matrix = np.zeros((len(classes), len(classes)))
 
     for i in range(len(classes)):
         for j in range(len(classes)):
 
-            matrix[i, j] = np.sum((y_label == classes[i]) & (y_hat == classes[j]))
+            matrix[i, j] = np.sum((actual == classes[i]) & (predicted == classes[j]))
 
     return matrix
-
 
 #test for multiclasses confusion matrix
 #y_predicted   = [1,2,3,4,5,6,7,8,9,0]
