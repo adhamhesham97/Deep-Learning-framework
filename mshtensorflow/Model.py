@@ -159,8 +159,9 @@ class model:
             for batch in mini_batches:
                 
                 X = batch
-                for Layer in self.layers: 
-                    X, _ = Layer.forward(X)
+                for Layer in self.layers:
+                    if(Layer.getLayerParams()[0] != 'dropout'):
+                        X, _ = Layer.forward(X)
                 L.append(X)
                 
             arr = np.hstack(L)
