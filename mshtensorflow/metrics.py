@@ -4,6 +4,8 @@
 ##by Kirollos Samir
 ####################################
 
+import numpy as np
+import pandas as pd
 
 
 
@@ -100,3 +102,22 @@ def confusion_matrix(predicted, actual):
 #con = confusion_matrix(y_predicted, y_actual )
 #print(con)
 
+def multiclass_confusion_matrix(y_hat, y_label):
+
+    classes = np.unique(y_label) # extract the different classes
+    matrix = np.zeros((len(classes), len(classes))) # initialize the confusion matrix with zeros
+
+    for i in range(len(classes)):
+        for j in range(len(classes)):
+
+            matrix[i, j] = np.sum((y_label == classes[i]) & (y_hat == classes[j]))
+
+    return matrix
+
+
+#test for multiclasses confusion matrix
+#y_predicted   = [1,2,3,4,5,6,7,8,9,0]
+#y_actual = [1,2,3,4,5,6,7,80,90,100]
+
+#z=multiclass_confusion_matrix(y_predicted, y_actual)
+#print(z)
