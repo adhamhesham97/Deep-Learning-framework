@@ -115,8 +115,7 @@ def multiclass_confusion_matrix(predicted, actual):
     return matrix
 
 #test for multiclasses confusion matrix
-#y_predicted   = [1,2,3,4,5,6,7,8,9,0]
-#y_actual = [1,2,3,4,5,6,7,80,90,100]
-
+#y_predicted   = [1,2,3,4,5,6,7]
+#y_actual = [1,2,3,4,50,6,70]
 #z=multiclass_confusion_matrix(y_predicted, y_actual)
 #print(z)
