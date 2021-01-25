@@ -104,8 +104,8 @@ def confusion_matrix(predicted, actual):
 
 def multiclass_confusion_matrix(y_hat, y_label):
 
-    classes = np.unique(y_label) # extract the different classes
-    matrix = np.zeros((len(classes), len(classes))) # initialize the confusion matrix with zeros
+    classes = np.unique(y_label) 
+    matrix = np.zeros((len(classes), len(classes)))
 
     for i in range(len(classes)):
         for j in range(len(classes)):
